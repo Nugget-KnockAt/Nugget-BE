@@ -1,24 +1,19 @@
 package com.example.nuggetbe.entity;
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.BatchSize;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
 
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Setter
 @Getter
-@Table(name = "member")
-public class Member{
+@Table(name = "guardian")
+public class Guardian {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -38,19 +33,10 @@ public class Member{
     @Column(nullable = true)
     private String email;
 
-    @Column(nullable = false)
-    private int guardianCount = 0;
+    @ManyToOne
+    @JoinColumn(name = "member_id", nullable = false)
+    private Member member;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
-
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @BatchSize(size = 3)
-    private List<Guardian> guardians = new ArrayList<>();
-
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Event> events = new ArrayList<>();
-
 }
-
-
