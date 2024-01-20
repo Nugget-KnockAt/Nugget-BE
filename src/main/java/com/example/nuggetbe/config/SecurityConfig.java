@@ -52,7 +52,7 @@ public class SecurityConfig{
 
                 .authorizeHttpRequests((authorizeRequests) ->
                         authorizeRequests
-                                .requestMatchers("/users/**").permitAll()
+                                .requestMatchers("/login/**").permitAll()
                                 .requestMatchers(PathRequest.toH2Console()).permitAll()
                                 .anyRequest().authenticated()
                 )
