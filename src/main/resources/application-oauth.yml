@@ -1,0 +1,19 @@
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id:
+            client-secret:
+            scope:
+              - email
+              - name
+
+jwt:
+  token:
+    secret-key: nugget-be
+  access-token:
+    expire-length: 1800000
+  refresh-token:
+    expire-length: 1209600000
