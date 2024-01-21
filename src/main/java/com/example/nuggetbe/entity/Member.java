@@ -1,6 +1,7 @@
 package com.example.nuggetbe.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -39,6 +40,7 @@ public class Member{
     private String email;
 
     @Column(nullable = false)
+    @Size(min =0 , max = 3, message = "보호자는 3명 이하여야 합니다.")
     private int guardianCount = 0;
 
     @Column(nullable = false)
