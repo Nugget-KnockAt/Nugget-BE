@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
 
@@ -27,6 +28,7 @@ public class Event {
     private String locationInfo;
 
     @Column(nullable = false)
+    @CreatedDate
     private LocalDateTime createdAt;
 
 }
