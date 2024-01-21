@@ -1,12 +1,15 @@
 package com.example.nuggetbe.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.BatchSize;
+import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -30,7 +33,7 @@ public class Member{
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String phoneNumber;
 
     @Column(nullable = true)
@@ -40,10 +43,12 @@ public class Member{
     private String email;
 
     @Column(nullable = false)
-    @Size(min =0 , max = 3, message = "보호자는 3명 이하여야 합니다.")
+    @Min(0)
+    @Max(3)
     private int guardianCount = 0;
 
     @Column(nullable = false)
+    @CreatedDate
     private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.EAGER)

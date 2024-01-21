@@ -15,11 +15,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("app")
 @RequiredArgsConstructor
 @Slf4j
+@RequestMapping(value = "/login/oauth2")
 public class MemberController {
     private final MemberService memberService;
+
     @GetMapping("/kakao/callback")
     public BaseResponse<?> kakaoCallback(String code) {
         try {

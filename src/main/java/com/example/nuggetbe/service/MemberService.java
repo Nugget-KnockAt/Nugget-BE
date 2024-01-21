@@ -19,6 +19,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -29,6 +30,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -63,7 +66,6 @@ public class MemberService {
             ObjectMapper objectMapper = new ObjectMapper();
             KakaoOAuthToken kaKaoOAuthToken = null;
             kaKaoOAuthToken = objectMapper.readValue(response.getBody(), KakaoOAuthToken.class);
-            log.info(kaKaoOAuthToken.getAccess_token().toString());
             return kaKaoOAuthToken;
         } catch (JsonProcessingException e) {
             throw new BaseException(BaseResponseStatus.GET_OAUTH_TOKEN_FAILED);
@@ -84,11 +86,9 @@ public class MemberService {
                     kakaoProfileRequest, // 요청할 때 보낼 데이터
                     String.class // 요청 시 반환 되는 데이터 타입
             );
-            log.info(response.getBody());
             ObjectMapper objectMapper = new ObjectMapper();
             KakaoOAuthProfile oAuthProfile = null;
             oAuthProfile = objectMapper.readValue(response.getBody(), KakaoOAuthProfile.class);
-            log.info(oAuthProfile.getProperties().getNickname());
             return oAuthProfile.getProperties().getNickname();
         } catch (JsonProcessingException e) {
             throw new BaseException(BaseResponseStatus.GET_OAUTH_INFO_FAILED);
@@ -112,7 +112,7 @@ public class MemberService {
             member.setEmail(signUpOAuthDto.getEmail());
             member.setName(signUpOAuthDto.getName());
             member.setPassword(passwordEncoder.encode("12345"));
-            member.setGuardianCount(0);
+            member.setCreatedAt(LocalDateTime.now());
             memberRepository.save(member);
         } else{
             throw new BaseException(BaseResponseStatus.DUPLICATE_EMAIL);
@@ -133,11 +133,15 @@ public class MemberService {
                 loginDto.getEmail(), loginDto.getPassword());
 
         try {
+            System.out.println(usernamePasswordAuthenticationToken);
             Authentication authentication = authenticationManagerBuilder.getObject()
                     .authenticate(usernamePasswordAuthenticationToken);
+            System.out.println("Authentication success: " + authentication);
             SecurityContextHolder.getContext().setAuthentication(authentication);
+            System.out.println("SecurityContextHolder success: " + SecurityContextHolder.getContext().getAuthentication());
             String jwt = jwtTokenProvider.createToken(authentication);
             String token = "Bearer " + jwt;
+            System.out.println("Authentication success: " + token);
 
             return LoginRes.builder()
                     .token(token)
