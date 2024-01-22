@@ -3,8 +3,10 @@ package com.example.nuggetbe.service;
 import com.example.nuggetbe.config.jwt.JwtTokenProvider;
 import com.example.nuggetbe.dto.request.KakaoSignUpOAuthDto;
 import com.example.nuggetbe.dto.request.LoginDto;
+import com.example.nuggetbe.dto.request.SignUpDto;
 import com.example.nuggetbe.dto.response.BaseException;
 import com.example.nuggetbe.dto.response.BaseResponseStatus;
+import com.example.nuggetbe.dto.response.CallbackResponse;
 import com.example.nuggetbe.dto.response.LoginRes;
 import com.example.nuggetbe.entity.KakaoOAuthToken;
 import com.example.nuggetbe.entity.KakaoOAuthProfile;
@@ -14,6 +16,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -39,14 +42,16 @@ import java.time.LocalDateTime;
 public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
-    private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
     private final JwtTokenProvider jwtTokenProvider;
     private final RestTemplate restTemplate;
 
     @Value("${kakao.redirect.url}")
     private String KAKAO_REDIRECT_URL;
 
-    public KakaoOAuthToken getKakaoToken(String code) {
+    public CallbackResponse getKakaoToken(String code) {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
@@ -66,7 +71,34 @@ public class MemberService {
             ObjectMapper objectMapper = new ObjectMapper();
             KakaoOAuthToken kaKaoOAuthToken = null;
             kaKaoOAuthToken = objectMapper.readValue(response.getBody(), KakaoOAuthToken.class);
-            return kaKaoOAuthToken;
+
+            //get nickname
+            String nickname = getOAuthInfo(kaKaoOAuthToken);
+            System.out.println(nickname);
+            //check if nickname is already signed up
+            CallbackResponse callbackResponse = new CallbackResponse();
+            if(checkEmail(nickname)==false) {
+                Member member = new Member();
+                member.setEmail(nickname);
+                member.setName(nickname);
+                member.setPassword(passwordEncoder.encode("12345"));
+                member.setCreatedAt(LocalDateTime.now());
+                //And return id of new member
+                Member memberInfo = memberRepository.saveAndFlush(member);
+
+                Long result = memberInfo.getId();
+
+                callbackResponse.setId(result);
+                callbackResponse.setIsSignedUp(false);
+            } else{
+                Member member = memberRepository.findByEmail(nickname);
+                Long result = member.getId();
+
+                callbackResponse.setId(result);
+                callbackResponse.setIsSignedUp(true);
+            }
+
+            return callbackResponse;
         } catch (JsonProcessingException e) {
             throw new BaseException(BaseResponseStatus.GET_OAUTH_TOKEN_FAILED);
         }
@@ -93,20 +125,18 @@ public class MemberService {
         } catch (JsonProcessingException e) {
             throw new BaseException(BaseResponseStatus.GET_OAUTH_INFO_FAILED);
         }
-
-
     }
 
     public boolean checkEmail(String email) {
         Member member = memberRepository.findByEmail(email);
         if (member == null) {
-            return true;
+            return false;
         }
-        return false;
+        return true;
     }
 
     @Transactional
-    public void signUpOAUth(KakaoSignUpOAuthDto signUpOAuthDto) {
+    public void signUpOAuth(KakaoSignUpOAuthDto signUpOAuthDto) {
         if(checkEmail(signUpOAuthDto.getEmail())==true) {
             Member member = new Member();
             member.setEmail(signUpOAuthDto.getEmail());
@@ -114,28 +144,33 @@ public class MemberService {
             member.setPassword(passwordEncoder.encode("12345"));
             member.setCreatedAt(LocalDateTime.now());
             memberRepository.save(member);
+
         } else{
             throw new BaseException(BaseResponseStatus.DUPLICATE_EMAIL);
         }
     }
 
     public LoginRes login(LoginDto loginDto) {
-        Member member = memberRepository.findByEmail(loginDto.getEmail());
+
+        Member member = memberRepository.findById(loginDto.getId()).orElseThrow(() -> new BaseException(BaseResponseStatus.NO_SUCH_MEMBER));
         if (member == null) {
             throw new BaseException(BaseResponseStatus.NO_SUCH_EMAIL);
         }
 
-        if (!passwordEncoder.matches(loginDto.getPassword(), member.getPassword())) {
+        if (!passwordEncoder.matches("12345", member.getPassword())) {
             throw new BaseException(BaseResponseStatus.WRONG_PASSWORD);
         }
 
-        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
-                loginDto.getEmail(), loginDto.getPassword());
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+                new UsernamePasswordAuthenticationToken(member.getId().toString(), "12345");
 
         try {
             System.out.println(usernamePasswordAuthenticationToken);
-            Authentication authentication = authenticationManagerBuilder.getObject()
-                    .authenticate(usernamePasswordAuthenticationToken);
+
+            // authenticationManager를 사용하여 인증을 수행합니다.
+            Authentication authentication = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
+            System.out.println("Authentication success: ");
+
             System.out.println("Authentication success: " + authentication);
             SecurityContextHolder.getContext().setAuthentication(authentication);
             System.out.println("SecurityContextHolder success: " + SecurityContextHolder.getContext().getAuthentication());
@@ -145,7 +180,7 @@ public class MemberService {
 
             return LoginRes.builder()
                     .token(token)
-                    .email(loginDto.getEmail())
+                    .email(member.getEmail())
                     .build();
 
         } catch (Exception e) {
@@ -153,4 +188,17 @@ public class MemberService {
             return null;
         }
     }
+
+    public void signUp(SignUpDto signUpDto) {
+        Member member = memberRepository.findById(signUpDto.getId()).orElseThrow(() -> new BaseException(BaseResponseStatus.NO_SUCH_MEMBER));
+        member.setEmail(signUpDto.getEmail());
+        member.setName(signUpDto.getName());
+        member.setPassword(passwordEncoder.encode("12345"));
+        member.setCreatedAt(LocalDateTime.now());
+        member.setAddress(signUpDto.getAddress());
+        member.setIsSignedUp(true);
+        member.setPhoneNumber(signUpDto.getPhoneNumber());
+        memberRepository.save(member);
+    }
 }
+

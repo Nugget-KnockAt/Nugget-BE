@@ -28,6 +28,9 @@ public class Member{
     private Long id;
 
     @Column(nullable = false)
+    private Boolean isSignedUp = false;
+
+    @Column(nullable = false)
     private String password;
 
     @Column(nullable = false)
