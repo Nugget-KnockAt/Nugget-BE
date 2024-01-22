@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
 
@@ -24,7 +25,7 @@ public class Guardian {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String phoneNumber;
 
     @Column(nullable = true)
@@ -38,5 +39,6 @@ public class Guardian {
     private Member member;
 
     @Column(nullable = false)
+    @CreatedDate
     private LocalDateTime createdAt;
 }
