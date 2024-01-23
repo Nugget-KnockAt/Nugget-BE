@@ -35,6 +35,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -181,6 +182,7 @@ public class MemberService {
             return LoginRes.builder()
                     .token(token)
                     .email(member.getEmail())
+                    .uuid(member.getUuid())
                     .build();
 
         } catch (Exception e) {
@@ -198,6 +200,7 @@ public class MemberService {
         member.setAddress(signUpDto.getAddress());
         member.setIsSignedUp(true);
         member.setPhoneNumber(signUpDto.getPhoneNumber());
+        member.setUuid(UUID.randomUUID());
         memberRepository.save(member);
     }
 }

@@ -10,6 +10,7 @@ import org.springframework.data.annotation.CreatedDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 
 @Entity
@@ -54,6 +55,9 @@ public class Member{
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Agreement agreement;
+
+    @Column(nullable = true)
+    private UUID uuid;
 }
 
 
