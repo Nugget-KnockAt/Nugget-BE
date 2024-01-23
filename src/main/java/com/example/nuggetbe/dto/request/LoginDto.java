@@ -1,5 +1,6 @@
 package com.example.nuggetbe.dto.request;
 
+import com.example.nuggetbe.entity.KakaoOAuthToken;
 import lombok.*;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -16,12 +17,7 @@ public class LoginDto {
 
     @JsonProperty
     @NotNull
-    private String email;
-
-
-    @JsonProperty
-    @NotNull
-    private String password;
+    private Long id;
 
 
 }
