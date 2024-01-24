@@ -64,37 +64,37 @@ public class MemberService {
                     kakaoTokenRequest, // 요청할 때 보낼 데이터
                     String.class // 요청 시 반환 되는 데이터 타입
             );
+
             //response objectMapper 로 파싱 하여 oAuthAccessToken 얻어냄
             ObjectMapper objectMapper = new ObjectMapper();
             KakaoOAuthToken kaKaoOAuthToken = null;
             kaKaoOAuthToken = objectMapper.readValue(response.getBody(), KakaoOAuthToken.class);
 
-            //get nickname
+            //닉네임으로 역할 찾기
             String nickname = getOAuthInfo(kaKaoOAuthToken);
-            System.out.println(nickname);
-            //check if nickname is already signed up
-            CallbackResponse callbackResponse = new CallbackResponse();
-            if(checkEmail(nickname)==false) {
-                Member member = new Member();
-                member.setEmail(nickname);
-                member.setName(nickname);
-                member.setPassword(passwordEncoder.encode("12345"));
-                member.setCreatedAt(LocalDateTime.now());
-                //And return id of new member
-                Member memberInfo = memberRepository.saveAndFlush(member);
+            Role role = checkRole(nickname);
+            Long memberId = null;
 
-                Long result = memberInfo.getId();
-
-                callbackResponse.setId(result);
-                callbackResponse.setIsSignedUp(false);
-            } else{
+            //역할에 따른 회원가입 혹은 로그인을 위한 과정
+            if(role != Role.ROLE_NONE){
                 Member member = memberRepository.findByEmail(nickname);
-                Long result = member.getId();
+                memberId = member.getId();
+            } else{
+                    Member member = new Member();
+                    member.setEmail(nickname);
+                    member.setName(nickname);
+                    member.setPassword(passwordEncoder.encode("12345"));
+                    member.setCreatedAt(LocalDateTime.now());
+                    member.setRole(Role.ROLE_NONE);
+                    memberRepository.save(member);
+                    memberId = member.getId();
+                    role = member.getRole();
+                }
 
-                callbackResponse.setId(result);
-                callbackResponse.setIsSignedUp(true);
-            }
-
+            CallbackResponse callbackResponse = CallbackResponse.builder()
+                    .id(memberId)
+                    .role(role)
+                    .build();
             return callbackResponse;
         } catch (JsonProcessingException e) {
             throw new BaseException(BaseResponseStatus.GET_OAUTH_TOKEN_FAILED);
@@ -124,17 +124,20 @@ public class MemberService {
         }
     }
 
-    public boolean checkEmail(String email) {
+    public Role checkRole(String email) {
         Member member = memberRepository.findByEmail(email);
+        Role role = null;
         if (member == null) {
-            return false;
+            role = Role.ROLE_NONE;
+        }else {
+            role = member.getRole();
         }
-        return true;
+        return role;
     }
 
     @Transactional
     public void signUpOAuth(KakaoSignUpOAuthDto signUpOAuthDto) {
-        if(checkEmail(signUpOAuthDto.getEmail())==true) {
+        if(checkRole(signUpOAuthDto.getEmail())==Role.ROLE_NONE) {
             Member member = new Member();
             member.setEmail(signUpOAuthDto.getEmail());
             member.setName(signUpOAuthDto.getName());
@@ -149,10 +152,8 @@ public class MemberService {
 
     public LoginResponse login(LoginDto loginDto) {
 
-        Member member = memberRepository.findById(loginDto.getId()).orElseThrow(() -> new BaseException(BaseResponseStatus.NO_SUCH_MEMBER));
-        if (member == null) {
-            throw new BaseException(BaseResponseStatus.NO_SUCH_EMAIL);
-        }
+        Member member = memberRepository.findById(loginDto.getId()).orElseThrow(
+                () -> new BaseException(BaseResponseStatus.NO_SUCH_MEMBER));
 
         if (!passwordEncoder.matches("12345", member.getPassword())) {
             throw new BaseException(BaseResponseStatus.WRONG_PASSWORD);
@@ -188,21 +189,46 @@ public class MemberService {
     }
 
     public SignUpResponse signUp(SignUpDto signUpDto) {
-        Member member = memberRepository.findById(signUpDto.getId()).orElseThrow(() -> new BaseException(BaseResponseStatus.NO_SUCH_MEMBER));
-        member.setEmail(signUpDto.getEmail());
-        member.setName(signUpDto.getName());
-        member.setPassword(passwordEncoder.encode("12345"));
-        member.setCreatedAt(LocalDateTime.now());
-        member.setAddress(signUpDto.getAddress());
-        member.setIsSignedUp(true);
-        member.setPhoneNumber(signUpDto.getPhoneNumber());
-        member.setUuid(UUID.randomUUID());
-        memberRepository.save(member);
-        UUID uuid = member.getUuid();
-        SignUpResponse signUpResponse = SignUpResponse.builder()
-                .uuid(uuid)
-                .build();
+        Role role = signUpDto.getRole();
+        SignUpResponse signUpResponse = null;
+        Member member = memberRepository.findById(signUpDto.getId()).orElseThrow(
+                () -> new BaseException(BaseResponseStatus.NO_SUCH_MEMBER));
+
+
+        if(role == Role.ROLE_MEMBER){
+            member.setEmail(signUpDto.getEmail());
+            member.setName(signUpDto.getName());
+            member.setPassword(passwordEncoder.encode("12345"));
+            member.setCreatedAt(LocalDateTime.now());
+            member.setAddress(signUpDto.getAddress());
+            member.setPhoneNumber(signUpDto.getPhoneNumber());
+            member.setRole(Role.ROLE_MEMBER);
+            member.setUuid(UUID.randomUUID());
+            memberRepository.save(member);
+
+            UUID uuid = member.getUuid();
+            signUpResponse = SignUpResponse.builder()
+                    .uuid(uuid)
+                    .build();
+        }else if(role == Role.ROLE_GUARDIAN) {
+            member.setEmail(signUpDto.getEmail());
+            member.setName(signUpDto.getName());
+            member.setPassword(passwordEncoder.encode("12345"));
+            member.setCreatedAt(LocalDateTime.now());
+            member.setAddress(signUpDto.getAddress());
+            member.setPhoneNumber(signUpDto.getPhoneNumber());
+            member.setRole(Role.ROLE_GUARDIAN);
+            memberRepository.save(member);
+
+            signUpResponse = SignUpResponse.builder()
+                    .uuid(null)
+                    .build();
+        } else{
+            throw new BaseException(BaseResponseStatus.INVALID_ROLE);
+        }
+
         return signUpResponse;
     }
+
 }
 

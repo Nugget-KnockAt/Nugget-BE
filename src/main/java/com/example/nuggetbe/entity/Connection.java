@@ -21,5 +21,5 @@ public class Connection {
 
     @ManyToOne
     @JoinColumn(name = "guardian_id")
-    private Guardian guardian;
+    private Member guardian;
 }

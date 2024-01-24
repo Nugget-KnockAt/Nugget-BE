@@ -1,5 +1,6 @@
 package com.example.nuggetbe.entity;
 
+import com.example.nuggetbe.dto.response.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,8 +26,6 @@ public class Member{
     @Column(name = "member_id")
     private Long id;
 
-    @Column(nullable = false)
-    private Boolean isSignedUp = false;
 
     @Column(nullable = false)
     private String password;
@@ -48,13 +47,16 @@ public class Member{
     private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<Connection> guardianConnections = new ArrayList<>();
+    private List<Connection> connections = new ArrayList<>();
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Event> events = new ArrayList<>();
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Agreement agreement;
+
+    @Column(nullable = false)
+    private Role role;
 
     @Column(nullable = true)
     private UUID uuid;
