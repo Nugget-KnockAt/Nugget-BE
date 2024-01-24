@@ -4,10 +4,7 @@ import com.example.nuggetbe.config.jwt.JwtTokenProvider;
 import com.example.nuggetbe.dto.request.KakaoSignUpOAuthDto;
 import com.example.nuggetbe.dto.request.LoginDto;
 import com.example.nuggetbe.dto.request.SignUpDto;
-import com.example.nuggetbe.dto.response.BaseException;
-import com.example.nuggetbe.dto.response.BaseResponseStatus;
-import com.example.nuggetbe.dto.response.CallbackResponse;
-import com.example.nuggetbe.dto.response.LoginRes;
+import com.example.nuggetbe.dto.response.*;
 import com.example.nuggetbe.entity.KakaoOAuthToken;
 import com.example.nuggetbe.entity.KakaoOAuthProfile;
 import com.example.nuggetbe.entity.Member;
@@ -24,7 +21,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -151,7 +147,7 @@ public class MemberService {
         }
     }
 
-    public LoginRes login(LoginDto loginDto) {
+    public LoginResponse login(LoginDto loginDto) {
 
         Member member = memberRepository.findById(loginDto.getId()).orElseThrow(() -> new BaseException(BaseResponseStatus.NO_SUCH_MEMBER));
         if (member == null) {
@@ -179,7 +175,7 @@ public class MemberService {
             String token = "Bearer " + jwt;
             System.out.println("Authentication success: " + token);
 
-            return LoginRes.builder()
+            return LoginResponse.builder()
                     .token(token)
                     .email(member.getEmail())
                     .uuid(member.getUuid())
@@ -191,7 +187,7 @@ public class MemberService {
         }
     }
 
-    public void signUp(SignUpDto signUpDto) {
+    public SignUpResponse signUp(SignUpDto signUpDto) {
         Member member = memberRepository.findById(signUpDto.getId()).orElseThrow(() -> new BaseException(BaseResponseStatus.NO_SUCH_MEMBER));
         member.setEmail(signUpDto.getEmail());
         member.setName(signUpDto.getName());
@@ -202,6 +198,11 @@ public class MemberService {
         member.setPhoneNumber(signUpDto.getPhoneNumber());
         member.setUuid(UUID.randomUUID());
         memberRepository.save(member);
+        UUID uuid = member.getUuid();
+        SignUpResponse signUpResponse = SignUpResponse.builder()
+                .uuid(uuid)
+                .build();
+        return signUpResponse;
     }
 }
 
