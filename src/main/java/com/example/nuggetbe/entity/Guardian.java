@@ -7,6 +7,7 @@ import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @AllArgsConstructor
@@ -17,6 +18,7 @@ import java.time.LocalDateTime;
 public class Guardian {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "guardian_id")
     private Long id;
 
     @Column(nullable = false)
@@ -34,9 +36,8 @@ public class Guardian {
     @Column(nullable = true)
     private String email;
 
-    @ManyToOne
-    @JoinColumn(name = "member_id", nullable = false)
-    private Member member;
+    @OneToMany(mappedBy = "guardian", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<Connection> memberConnections;
 
     @Column(nullable = false)
     @CreatedDate
