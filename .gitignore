@@ -38,3 +38,6 @@ out/
 
 ### OS ###
 .DS_Store
+
+### application.properties ###
+application.properties
