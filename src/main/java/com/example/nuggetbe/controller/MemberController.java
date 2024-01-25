@@ -1,48 +1,37 @@
 package com.example.nuggetbe.controller;
 
-import com.example.nuggetbe.dto.request.LoginDto;
-import com.example.nuggetbe.dto.request.SignUpDto;
-import com.example.nuggetbe.dto.response.*;
+import com.example.nuggetbe.dto.response.BaseException;
+import com.example.nuggetbe.dto.response.BaseResponse;
+import com.example.nuggetbe.dto.response.BaseResponseStatus;
 import com.example.nuggetbe.service.MemberService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping(value = "/login/oauth2")
+@RequestMapping(value = "/member")
 public class MemberController {
-    private final MemberService memberService;
+    @Autowired
+    private MemberService memberService;
 
-    @GetMapping("/kakao/callback")
-    public BaseResponse<?> kakaoCallback(String code) {
+    @PostMapping("/connect")
+    public BaseResponse<?> createConnection(@RequestParam String uuid) {
         try {
-            //code 이용 하여 oAuthAccessToken 얻어옴
-            CallbackResponse result = memberService.getKakaoToken(code);
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String id = authentication.getName();
 
-            return new BaseResponse<>(BaseResponseStatus.SUCCESS, result);
-        } catch (BaseException e) {
-            return new BaseResponse<>(e.getStatus());
-        }
-    }
-
-    @PostMapping("/signUp")
-    public BaseResponse<?> signUp(@RequestBody @Valid SignUpDto signUpDto) {
-        try {
-            SignUpResponse result =  memberService.signUp(signUpDto);
-            return new BaseResponse<>(BaseResponseStatus.SUCCESS, result);
-        } catch (BaseException e) {
-            return new BaseResponse(e.getStatus());
-        }
-    }
-
-    @PostMapping("/login")
-    public BaseResponse<?> login(@RequestBody LoginDto loginDto) {
-        try {
-            LoginResponse loginRes = memberService.login(loginDto);
-            return new BaseResponse<>(BaseResponseStatus.SUCCESS, loginRes);
+            memberService.createConnection(uuid, id);
+            return new BaseResponse<>(BaseResponseStatus.SUCCESS, "연결 성공");
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
