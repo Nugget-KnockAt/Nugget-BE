@@ -124,6 +124,7 @@ public class KakaoService {
             ObjectMapper objectMapper = new ObjectMapper();
             KakaoOAuthProfile oAuthProfile = null;
             oAuthProfile = objectMapper.readValue(response.getBody(), KakaoOAuthProfile.class);
+            System.out.println("-----" + oAuthProfile);
             System.out.println("카카오 닉네임 : " + oAuthProfile.getProperties());
             return oAuthProfile.getProperties().getNickname();
         } catch (JsonProcessingException e) {
