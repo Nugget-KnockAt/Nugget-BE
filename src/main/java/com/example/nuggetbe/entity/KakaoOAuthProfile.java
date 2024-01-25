@@ -10,6 +10,9 @@ public class KakaoOAuthProfile {
     @JsonProperty("id")
     private Long id;
 
+    @JsonProperty("setPrivacyInfo")
+    private Boolean setPrivacyInfo;
+
     @JsonProperty("connected_at")
     private String connectedAt;
 
