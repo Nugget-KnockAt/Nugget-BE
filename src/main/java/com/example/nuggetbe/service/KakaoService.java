@@ -69,6 +69,7 @@ public class KakaoService {
             ObjectMapper objectMapper = new ObjectMapper();
             KakaoOAuthToken kaKaoOAuthToken = null;
             kaKaoOAuthToken = objectMapper.readValue(response.getBody(), KakaoOAuthToken.class);
+            System.out.println("카카오 엑세스 토큰 : " + kaKaoOAuthToken);
 
             //닉네임으로 역할 찾기
             String nickname = getOAuthInfo(kaKaoOAuthToken);
