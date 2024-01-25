@@ -1,40 +1,97 @@
 package com.example.nuggetbe.service;
 
+import com.example.nuggetbe.dto.response.BaseException;
+import com.example.nuggetbe.dto.response.BaseResponseStatus;
+import com.example.nuggetbe.dto.response.CallbackGoogleResponse;
+import com.example.nuggetbe.dto.response.Role;
+import com.example.nuggetbe.entity.Member;
+import com.example.nuggetbe.repository.MemberRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.http.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDateTime;
+
+@RequiredArgsConstructor
 @Service
 public class LoginService {
 
-    private final Environment env;
     private final RestTemplate restTemplate = new RestTemplate();
 
-    public LoginService(Environment env) {
-        this.env = env;
+    private final Environment env;
+    private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
+
+    @Transactional
+    public CallbackGoogleResponse socialLogin(String code, String registrationId) {
+        try {
+            System.out.println("code = " + code);
+            System.out.println("registrationId = " + registrationId);
+
+            String accessToken = getAccessToken(code, registrationId);
+            JsonNode userResourceNode = getUserResource(accessToken, registrationId);
+
+            System.out.println("accessToken = " + accessToken);
+
+            String id = userResourceNode.get("id").asText();
+            String email = userResourceNode.get("email").asText();
+            String nickname = userResourceNode.get("name").asText();
+
+            System.out.println("id = " + id);
+            System.out.println("email = " + email);
+            System.out.println("nickname = " + nickname);
+
+            // email로 역할 체크
+            Role role = checkRole(email);
+            System.out.println("role = " + role);
+            Long memberId = null;
+
+            if (role == Role.ROLE_NONE) {
+                Member member = new Member();
+
+                member.setEmail(email);
+                member.setName(nickname);
+                member.setPassword(passwordEncoder.encode("12345"));
+                member.setCreatedAt(LocalDateTime.now());
+                member.setRole(Role.ROLE_NONE);
+
+                memberRepository.save(member);
+                memberId = member.getId();
+            }
+
+            CallbackGoogleResponse response = CallbackGoogleResponse.builder()
+                    .id(memberId)
+                    .email(email)
+                    .role(role)
+                    .build();
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.writeValueAsString(response);
+
+            return response;
+        } catch (JsonProcessingException e) {
+            throw new BaseException(BaseResponseStatus.GET_OAUTH_TOKEN_FAILED);
+        }
+
     }
 
-    public void socialLogin(String code, String registrationId) {
+    private Role checkRole(String email) {
 
-        System.out.println("code = " + code);
-        System.out.println("registrationId = " + registrationId);
+        Member member = memberRepository.findByEmail(email);
 
-        String accessToken = getAccessToken(code, registrationId);
-        JsonNode userResourceNode = getUserResource(accessToken, registrationId);
-
-        System.out.println("accessToken = " + accessToken);
-
-        String id = userResourceNode.get("id").asText();
-        String email = userResourceNode.get("email").asText();
-        String nickname = userResourceNode.get("name").asText();
-
-        System.out.println("id = " + id);
-        System.out.println("email = " + email);
-        System.out.println("nickname = " + nickname);
+        if (member == null) {
+            return Role.ROLE_NONE;
+        }
+        return member.getRole();
     }
 
     private String getAccessToken(String authorizationCode, String registrationId) {
