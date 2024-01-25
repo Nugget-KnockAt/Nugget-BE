@@ -74,12 +74,14 @@ public class KakaoService {
             //닉네임으로 역할 찾기
             String nickname = getOAuthInfo(kaKaoOAuthToken);
             Role role = checkRole(nickname);
+            System.out.println("Role : " + role);
             Long memberId = null;
 
             //역할에 따른 회원가입 혹은 로그인을 위한 과정
             if(role != Role.ROLE_NONE){
                 Member member = memberRepository.findByEmail(nickname);
                 memberId = member.getId();
+                System.out.println("memberId : " + memberId);
             } else{
                     Member member = new Member();
                     member.setEmail(nickname);
@@ -90,6 +92,7 @@ public class KakaoService {
                     memberRepository.save(member);
                     memberId = member.getId();
                     role = member.getRole();
+                    System.out.println("member : " + memberId +"  "+ role);
                 }
 
             CallbackResponse callbackResponse = CallbackResponse.builder()
@@ -117,9 +120,11 @@ public class KakaoService {
                     kakaoProfileRequest, // 요청할 때 보낼 데이터
                     String.class // 요청 시 반환 되는 데이터 타입
             );
+            System.out.println("카카오 프로필 : " + response.getBody());
             ObjectMapper objectMapper = new ObjectMapper();
             KakaoOAuthProfile oAuthProfile = null;
             oAuthProfile = objectMapper.readValue(response.getBody(), KakaoOAuthProfile.class);
+            System.out.println("카카오 닉네임 : " + oAuthProfile.getProperties());
             return oAuthProfile.getProperties().getNickname();
         } catch (JsonProcessingException e) {
             throw new BaseException(BaseResponseStatus.GET_OAUTH_INFO_FAILED);
