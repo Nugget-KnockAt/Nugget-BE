@@ -40,13 +40,6 @@ public class SecurityConfig{
         return new BCryptPasswordEncoder();
     }
 
-    @Bean
-    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
-        AuthenticationManagerBuilder builder = http.getSharedObject(AuthenticationManagerBuilder.class);
-        builder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
-        return builder.build();
-    }
-
 
 
     @Bean
@@ -71,7 +64,8 @@ public class SecurityConfig{
                 .authorizeHttpRequests((authorizeRequests) ->
                         authorizeRequests
                                 .requestMatchers("/login/**").permitAll()
-                                .requestMatchers(PathRequest.toH2Console()).permitAll()
+                                .requestMatchers("/swagger-ui/**").permitAll()
+                                .requestMatchers("/member/**").permitAll()
                                 .anyRequest().authenticated()
                 )
 

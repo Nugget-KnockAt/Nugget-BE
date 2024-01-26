@@ -27,7 +27,9 @@ public enum BaseResponseStatus {
     WRONG_PASSWORD(false, 3002, "비밀번호가 틀렸습니다."),
     GET_OAUTH_TOKEN_FAILED(false, 3003, "oAuth 토큰 요청 실패"),
     GET_OAUTH_INFO_FAILED(false, 3004, "oAuth Info 요청 실패"),
-    NO_SUCH_MEMBER(false,3005 ,"No Such Member" ), INVALID_ROLE(false, 3005, "사용자 역할 없음");
+    NO_SUCH_MEMBER(false,3005 ,"No Such Member" ), INVALID_ROLE(false, 3005, "사용자 역할 없음"),
+    FAILED_TO_SAVE_CUSTOM_TOUCH(false,3006 ,"Failed to save custom touch" ),
+    FAILED_TO_GET_CUSTOM_TOUCH(false,3007 ,"Failed to get custom touch" ),;
 
 
 

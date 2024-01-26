@@ -20,6 +20,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -38,8 +39,10 @@ import java.util.UUID;
 public class KakaoService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
-    @Autowired
-    private AuthenticationManager authenticationManager;
+
+
+    private final AuthenticationManagerBuilder authenticationManagerBuilder;
+
 
     private final JwtTokenProvider jwtTokenProvider;
     private final RestTemplate restTemplate;
@@ -120,11 +123,8 @@ public class KakaoService {
                     kakaoProfileRequest, // 요청할 때 보낼 데이터
                     String.class // 요청 시 반환 되는 데이터 타입
             );
-            System.out.println("카카오 프로필 : " + response.getBody());
             ObjectMapper objectMapper = new ObjectMapper();
             KakaoOAuthProfile oAuthProfile = objectMapper.readValue(response.getBody(), KakaoOAuthProfile.class);
-            System.out.println("-----" + oAuthProfile);
-            System.out.println("카카오 닉네임 : " + oAuthProfile.getProperties());
             return oAuthProfile.getProperties().getNickname();
         } catch (JsonProcessingException e) {
             throw new BaseException(BaseResponseStatus.GET_OAUTH_INFO_FAILED);
@@ -133,8 +133,9 @@ public class KakaoService {
 
     public Role checkRole(String email) {
         Member member = memberRepository.findByEmail(email);
+        Member member1 = memberRepository.findByName(email);
         Role role = null;
-        if (member == null) {
+        if (member == null || member1 == null) {
             role = Role.ROLE_NONE;
         }else {
             role = member.getRole();
@@ -153,21 +154,15 @@ public class KakaoService {
         }
 
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-                new UsernamePasswordAuthenticationToken(member.getId().toString(), "12345");
+                new UsernamePasswordAuthenticationToken(String.valueOf(member.getId()), "12345");
 
         try {
-            System.out.println(usernamePasswordAuthenticationToken);
 
-            // authenticationManager를 사용하여 인증을 수행합니다.
-            Authentication authentication = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
-            System.out.println("Authentication success: ");
-
-            System.out.println("Authentication success: " + authentication);
+            Authentication authentication = authenticationManagerBuilder.getObject()
+                    .authenticate(usernamePasswordAuthenticationToken);
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            System.out.println("SecurityContextHolder success: " + SecurityContextHolder.getContext().getAuthentication());
             String jwt = jwtTokenProvider.createToken(authentication);
             String token = "Bearer " + jwt;
-            System.out.println("Authentication success: " + token);
 
             return LoginResponse.builder()
                     .token(token)

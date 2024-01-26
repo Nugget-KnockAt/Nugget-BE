@@ -9,37 +9,44 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
 
 import java.io.IOException;
 
-@Slf4j
+@Component
 @RequiredArgsConstructor
+@Slf4j
 public class JwtFilter extends GenericFilterBean {
 
     public static final String AUTHORIZATION_HEADER = "Authorization";
-    private final JwtTokenProvider tokenProvider;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        HttpServletRequest httpServletRequest = (HttpServletRequest) request;
-        String jwt = resolveToken(httpServletRequest);
-        String requestURI = httpServletRequest.getRequestURI();
-        System.out.println("requestURI = " + requestURI);
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
+            throws IOException, ServletException {
+        HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
 
-        if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
-            System.out.println("jwt = " + jwt);
-            Authentication authentication = tokenProvider.getAuthentication(jwt);
+
+        String requestURI = httpServletRequest.getRequestURI();
+
+
+
+        String jwt = resolveToken(httpServletRequest);
+
+        if (StringUtils.hasText(jwt) && jwtTokenProvider.validateToken(jwt)) {
+            Authentication authentication = jwtTokenProvider.getAuthentication(jwt);
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            log.debug("Security Context에 '{}' 인증 정보를 저장했습니다, uri: {}", authentication.getName(), requestURI);
+            log.info("Security Context에 '{}' 인증 정보를 저장했습니다, uri: {}", authentication.getName(), requestURI);
         } else {
-            log.debug("유효한 JWT 토큰이 없습니다, uri: {}", requestURI);
+            log.info("유효한 JWT 토큰이 없습니다, uri: {}", requestURI);
         }
 
-        chain.doFilter(request, response);
+        filterChain.doFilter(servletRequest, servletResponse);
     }
 
+    // Request Header 에서 토큰 정보를 꺼내오기 위한 메소드
     private String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
 
@@ -48,5 +55,8 @@ public class JwtFilter extends GenericFilterBean {
         }
 
         return null;
+
     }
+
+
 }
