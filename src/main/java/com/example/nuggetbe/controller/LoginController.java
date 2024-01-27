@@ -1,12 +1,13 @@
 package com.example.nuggetbe.controller;
 
-import com.example.nuggetbe.dto.response.BaseException;
-import com.example.nuggetbe.dto.response.BaseResponse;
-import com.example.nuggetbe.dto.response.BaseResponseStatus;
-import com.example.nuggetbe.dto.response.CallbackGoogleResponse;
+import com.example.nuggetbe.dto.request.LoginDto;
+import com.example.nuggetbe.dto.request.SignUpDto;
+import com.example.nuggetbe.dto.response.*;
 import com.example.nuggetbe.service.LoginService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @RequiredArgsConstructor
 @RequestMapping(value = "/login/oauth2", produces = "application/json")
@@ -21,6 +22,28 @@ public class LoginController {
             CallbackGoogleResponse result = loginService.socialLogin(code, registrationId);
 
             return new BaseResponse<>(BaseResponseStatus.SUCCESS, result);
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    @PostMapping("/google/signup")
+    public BaseResponse<?> signup(@RequestBody @Valid SignUpDto signUpDto) {
+        try {
+            SignUpResponse response = loginService.signup(signUpDto);
+
+            return new BaseResponse<>(BaseResponseStatus.SUCCESS, response);
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    @PostMapping("/google/login")
+    public BaseResponse<?> login(@RequestBody LoginDto loginDto) {
+        try {
+            LoginResponse response = loginService.login(loginDto);
+
+            return new BaseResponse<>(BaseResponseStatus.SUCCESS, response);
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
