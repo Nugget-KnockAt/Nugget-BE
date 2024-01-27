@@ -28,9 +28,9 @@ public class MemberService {
     private MessageRepository messageRepository;
 
 
-
     @Transactional
     public void createConnection(UUID uuid, Long id) {
+
 
         Member member1 = memberRepository.findByUuid(uuid);
         Member member2 = memberRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Member not found with id: " + id));

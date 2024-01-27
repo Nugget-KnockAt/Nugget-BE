@@ -1,6 +1,7 @@
 package com.example.nuggetbe.controller;
 
 
+import com.example.nuggetbe.dto.request.ConnectionDto;
 import com.example.nuggetbe.dto.request.CustomTouchPostDto;
 import com.example.nuggetbe.dto.response.BaseException;
 import com.example.nuggetbe.dto.response.BaseResponse;
@@ -28,17 +29,18 @@ public class MemberController {
     private MemberService memberService;
 
     @PostMapping("/connect")
-    public BaseResponse<?> createConnection(@RequestBody String uuidString) {
-        UUID uuid = UUID.fromString(uuidString);
+    public BaseResponse<?> createConnection(@RequestBody ConnectionDto request) {
         try {
+            UUID uuid = UUID.fromString(request.getUuid());
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
             if (authentication != null && authentication.isAuthenticated()) {
                 Long memberId = Long.valueOf(authentication.getName());
                 memberService.createConnection(uuid, memberId);
             }
-
             return new BaseResponse<>(BaseResponseStatus.SUCCESS, "연결 성공");
+        } catch (IllegalArgumentException e) {
+            log.error("Error in createConnection: Invalid UUID string", e);
+            return new BaseResponse<>(BaseResponseStatus.INVALID_UUID_FORMAT, "Invalid UUID format");
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }

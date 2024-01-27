@@ -61,8 +61,6 @@ public class Member{
     @Column(nullable = false)
     private Role role;
 
-    @Column(nullable = true)
+    @Column(nullable = true, length = 36)
     private UUID uuid;
 }
-
-
