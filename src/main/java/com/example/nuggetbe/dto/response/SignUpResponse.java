@@ -9,5 +9,6 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SignUpResponse {
-    UUID uuid;
+    Long id;
+    Role role;
 }

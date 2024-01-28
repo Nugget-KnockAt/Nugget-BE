@@ -181,6 +181,7 @@ public class KakaoService {
                     .token(token)
                     .email(member.getEmail())
                     .uuid(member.getUuid())
+                    .role(member.getRole())
                     .build();
 
         } catch (Exception e) {
@@ -208,9 +209,10 @@ public class KakaoService {
             member.setUuid(UUID.randomUUID());
             memberRepository.save(member);
 
-            UUID uuid = member.getUuid();
+            Long id = member.getId();
             signUpResponse = SignUpResponse.builder()
-                    .uuid(uuid)
+                    .id(id)
+                    .role(member.getRole())
                     .build();
         }else if(role == Role.ROLE_GUARDIAN) {
             member.setEmail(signUpDto.getEmail());
@@ -223,7 +225,8 @@ public class KakaoService {
             memberRepository.save(member);
 
             signUpResponse = SignUpResponse.builder()
-                    .uuid(null)
+                    .id(member.getId())
+                    .role(member.getRole())
                     .build();
         } else{
             throw new BaseException(BaseResponseStatus.INVALID_ROLE);
