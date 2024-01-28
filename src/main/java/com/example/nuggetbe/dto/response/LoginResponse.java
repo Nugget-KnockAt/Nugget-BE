@@ -13,4 +13,5 @@ public class LoginResponse {
     String token;
     String email;
     UUID uuid;
+    Role role;
 }

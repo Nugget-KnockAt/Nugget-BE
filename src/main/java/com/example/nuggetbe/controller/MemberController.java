@@ -12,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -73,7 +72,6 @@ public class MemberController {
                 GetCustomTouchResponse getCustomTouchResponse = memberService.getCustomTouch(touchCount, memberId);
                 return new BaseResponse<>(BaseResponseStatus.SUCCESS, getCustomTouchResponse);
             } return new BaseResponse<>(BaseResponseStatus.FAILED_TO_GET_CUSTOM_TOUCH);
-
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }

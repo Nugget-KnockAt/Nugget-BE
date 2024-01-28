@@ -5,21 +5,21 @@ import com.example.nuggetbe.dto.response.BaseResponse;
 import com.example.nuggetbe.dto.response.BaseResponseStatus;
 import com.example.nuggetbe.service.EventService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
+@Slf4j
+@RequestMapping(value = "/member")
 public class EventController {
 
     private final EventService eventService;
 
     @PostMapping("/event")
-    public BaseResponse<?> createEvent(@RequestParam String locationInfo) {
+    public BaseResponse<?> createEvent(@RequestBody String locationInfo) {
         try {
             System.out.println("locationInfo = " + locationInfo);
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
