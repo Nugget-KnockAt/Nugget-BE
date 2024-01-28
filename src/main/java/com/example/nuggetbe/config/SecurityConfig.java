@@ -2,16 +2,11 @@ package com.example.nuggetbe.config;
 
 import com.example.nuggetbe.config.jwt.JwtAccessDeniedHandler;
 import com.example.nuggetbe.config.jwt.JwtAuthenticationEntryPoint;
-import com.example.nuggetbe.config.jwt.JwtSecurityConfig;
 import com.example.nuggetbe.config.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -63,8 +58,8 @@ public class SecurityConfig{
 
                 .authorizeHttpRequests((authorizeRequests) ->
                         authorizeRequests
+                                .requestMatchers("/swagger-ui/**","/v3/api-docs/**").permitAll()
                                 .requestMatchers("/login/**").permitAll()
-                                .requestMatchers("/swagger-ui/**").permitAll()
                                 .requestMatchers("/member/**").permitAll()
                                 .anyRequest().authenticated()
                 )
@@ -74,8 +69,6 @@ public class SecurityConfig{
                                 .accessDeniedHandler(jwtAccessDeniedHandler)
                                 .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 );
-
-
 
 
         return http.build();

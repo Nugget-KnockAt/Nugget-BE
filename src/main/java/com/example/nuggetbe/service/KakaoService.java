@@ -82,9 +82,17 @@ public class KakaoService {
 
             //역할에 따른 회원가입 혹은 로그인을 위한 과정
             if(role != Role.ROLE_NONE){
+
                 Member member = memberRepository.findByEmail(nickname);
-                memberId = member.getId();
-                System.out.println("memberId : " + memberId);
+                Member member1 = memberRepository.findByName(nickname);
+
+                if (member != null) {
+                    System.out.println("memberId : " + memberId);
+                    memberId = member.getId();
+                }else if(member1 != null){
+                    memberId = member1.getId();
+                }
+
             } else{
                     Member member = new Member();
                     member.setEmail(nickname);
@@ -134,11 +142,16 @@ public class KakaoService {
     public Role checkRole(String email) {
         Member member = memberRepository.findByEmail(email);
         Member member1 = memberRepository.findByName(email);
+        System.out.println("member : " + member);
+        System.out.println("member1 : " + member1);
         Role role = null;
-        if (member == null || member1 == null) {
-            role = Role.ROLE_NONE;
-        }else {
+        if (member != null) {
             role = member.getRole();
+        }else if(member1 != null){
+            role = member1.getRole();
+        }
+        else {
+            role = Role.ROLE_NONE;
         }
         return role;
     }
