@@ -1,11 +1,13 @@
 package com.example.nuggetbe.controller;
 
+import com.example.nuggetbe.dto.request.EventDto;
 import com.example.nuggetbe.dto.response.BaseException;
 import com.example.nuggetbe.dto.response.BaseResponse;
 import com.example.nuggetbe.dto.response.BaseResponseStatus;
 import com.example.nuggetbe.service.EventService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.web.JsonPath;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -19,13 +21,14 @@ public class EventController {
     private final EventService eventService;
 
     @PostMapping("/event")
-    public BaseResponse<?> createEvent(@RequestBody String locationInfo) {
+    public BaseResponse<?> createEvent(@RequestBody EventDto eventDto) {
         try {
-            System.out.println("locationInfo = " + locationInfo);
+            System.out.println("locationInfo = " + eventDto.getLocationInfo());
+
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String id = authentication.getName();
 
-            eventService.createEvent(locationInfo, id);
+            eventService.createEvent(eventDto.getLocationInfo(), id);
             return new BaseResponse<>(BaseResponseStatus.SUCCESS);
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
