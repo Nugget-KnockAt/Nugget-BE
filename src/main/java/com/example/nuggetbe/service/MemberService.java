@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.apache.commons.lang3.StringUtils;
+
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -58,8 +60,12 @@ public class MemberService {
     }
 
     private void processProperty(String propertyValue, int touchCount, Member member) {
+        Optional<Message> result = messageRepository.findByMemberAndTouchCount(member, touchCount);
+
         if (StringUtils.isNotBlank(propertyValue)) {
-            Message message = new Message();
+
+            Message message = result.orElse(new Message());
+
             message.setMember(member);
             message.setTouchCount(touchCount);
             message.setText(propertyValue);
