@@ -3,6 +3,7 @@ package com.example.nuggetbe.controller;
 
 import com.example.nuggetbe.dto.request.ConnectionDto;
 import com.example.nuggetbe.dto.request.CustomTouchPostDto;
+import com.example.nuggetbe.dto.request.LoginDto;
 import com.example.nuggetbe.dto.response.BaseException;
 import com.example.nuggetbe.dto.response.BaseResponse;
 import com.example.nuggetbe.dto.response.BaseResponseStatus;
@@ -74,6 +75,17 @@ public class MemberController {
             } return new BaseResponse<>(BaseResponseStatus.FAILED_TO_GET_CUSTOM_TOUCH);
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    @PostMapping("/deleteMember")
+    public BaseResponse<?> deleteMember(@RequestBody LoginDto loginDto) {
+        try {
+             Long memberId = loginDto.getId();
+                memberService.deleteMember(memberId);
+                return new BaseResponse<>(BaseResponseStatus.SUCCESS, "회원 탈퇴 성공");
+        } catch (BaseException e) {
+            return new BaseResponse<>(BaseResponseStatus.FAILED_TO_DELETE_MEMBER, "회원 탈퇴 실패");
         }
     }
 
