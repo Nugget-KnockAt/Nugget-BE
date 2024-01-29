@@ -78,4 +78,11 @@ public class MemberService {
                 .text(message.getText())
                 .build();
     }
+
+    public void deleteMember(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("Member not found with id: " + memberId));
+
+        memberRepository.delete(member);
+    }
 }
