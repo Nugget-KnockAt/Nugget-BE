@@ -10,5 +10,5 @@ import java.util.Optional;
 @Repository
 public interface MessageRepository extends JpaRepository<Message, Long> {
 
-    Optional<Object> findByMemberAndTouchCount(Member member, int touchCount);
+    Optional<Message> findByMemberAndTouchCount(Member member, int touchCount);
 }
