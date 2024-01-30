@@ -176,10 +176,10 @@ public class KakaoService {
             SecurityContextHolder.getContext().setAuthentication(authentication);
             String jwt = jwtTokenProvider.createToken(authentication);
             // 생성된 액세스 토큰
-            String accessToken = jwtTokenProvider.createToken(authentication);
+            String accessToken = "Bearer " + jwtTokenProvider.createToken(authentication);
 
             // 생성된 리프레시 토큰
-            String refreshToken = jwtTokenProvider.createRefreshToken(authentication);
+            String refreshToken = "Bearer " + jwtTokenProvider.createRefreshToken(authentication);
 
 
             return LoginResponse.builder()
