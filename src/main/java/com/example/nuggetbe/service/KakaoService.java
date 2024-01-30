@@ -175,10 +175,16 @@ public class KakaoService {
                     .authenticate(usernamePasswordAuthenticationToken);
             SecurityContextHolder.getContext().setAuthentication(authentication);
             String jwt = jwtTokenProvider.createToken(authentication);
-            String token = "Bearer " + jwt;
+            // 생성된 액세스 토큰
+            String accessToken = jwtTokenProvider.createToken(authentication);
+
+            // 생성된 리프레시 토큰
+            String refreshToken = jwtTokenProvider.createRefreshToken(authentication);
+
 
             return LoginResponse.builder()
-                    .token(token)
+                    .accessToken(accessToken)
+                    .refreshToken(refreshToken)
                     .email(member.getEmail())
                     .uuid(member.getUuid())
                     .role(member.getRole())
