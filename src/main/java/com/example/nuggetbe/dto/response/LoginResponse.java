@@ -10,7 +10,8 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class LoginResponse {
-    String token;
+    String accessToken;
+    String refreshToken;
     String email;
     UUID uuid;
     Role role;
