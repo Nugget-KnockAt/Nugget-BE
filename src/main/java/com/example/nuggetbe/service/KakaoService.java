@@ -51,8 +51,8 @@ public class KakaoService {
     private String KAKAO_REDIRECT_URL;
 
     @Transactional
-    public CallbackResponse getKakaoToken(String code) {
-        try {
+    public CallbackResponse getKakaoToken(String nickname) {
+        /*
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
             MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
@@ -73,47 +73,46 @@ public class KakaoService {
             KakaoOAuthToken kaKaoOAuthToken = null;
             kaKaoOAuthToken = objectMapper.readValue(response.getBody(), KakaoOAuthToken.class);
             System.out.println("카카오 엑세스 토큰 : " + kaKaoOAuthToken);
+            String nickname = getOAuthInfo(kaKaoOAuthToken);
 
             //닉네임으로 역할 찾기
-            String nickname = getOAuthInfo(kaKaoOAuthToken);
-            Role role = checkRole(nickname);
-            System.out.println("Role : " + role);
-            Long memberId = null;
+            */
 
-            //역할에 따른 회원가입 혹은 로그인을 위한 과정
-            if(role != Role.ROLE_NONE){
+        Role role = checkRole(nickname);
+        Long memberId = null;
 
-                Member member = memberRepository.findByEmail(nickname);
-                Member member1 = memberRepository.findByName(nickname);
 
-                if (member != null) {
-                    System.out.println("memberId : " + memberId);
-                    memberId = member.getId();
-                }else if(member1 != null){
-                    memberId = member1.getId();
-                }
+        //역할에 따른 회원가입 혹은 로그인을 위한 과정
+        if(role != Role.ROLE_NONE){
 
-            } else{
-                    Member member = new Member();
-                    member.setEmail(nickname);
-                    member.setName(nickname);
-                    member.setPassword(passwordEncoder.encode("12345"));
-                    member.setCreatedAt(LocalDateTime.now());
-                    member.setRole(Role.ROLE_NONE);
-                    memberRepository.save(member);
-                    memberId = member.getId();
-                    role = member.getRole();
-                    System.out.println("member : " + memberId +"  "+ role);
-                }
+            Member member = memberRepository.findByEmail(nickname);
+            Member member1 = memberRepository.findByName(nickname);
 
-            CallbackResponse callbackResponse = CallbackResponse.builder()
-                    .id(memberId)
-                    .role(role)
-                    .build();
-            return callbackResponse;
-        } catch (JsonProcessingException e) {
-            throw new BaseException(BaseResponseStatus.GET_OAUTH_TOKEN_FAILED);
-        }
+            if (member != null) {
+                System.out.println("memberId : " + memberId);
+                memberId = member.getId();
+            }else if(member1 != null){
+                memberId = member1.getId();
+            }
+
+        } else{
+                Member member = new Member();
+                member.setEmail(nickname);
+                member.setName(nickname);
+                member.setPassword(passwordEncoder.encode("12345"));
+                member.setCreatedAt(LocalDateTime.now());
+                member.setRole(Role.ROLE_NONE);
+                memberRepository.save(member);
+                memberId = member.getId();
+                role = member.getRole();
+                System.out.println("member : " + memberId +"  "+ role);
+            }
+
+        CallbackResponse callbackResponse = CallbackResponse.builder()
+                .id(memberId)
+                .role(role)
+                .build();
+        return callbackResponse;
     }
 
 
@@ -142,8 +141,6 @@ public class KakaoService {
     public Role checkRole(String email) {
         Member member = memberRepository.findByEmail(email);
         Member member1 = memberRepository.findByName(email);
-        System.out.println("member : " + member);
-        System.out.println("member1 : " + member1);
         Role role = null;
         if (member != null) {
             role = member.getRole();
