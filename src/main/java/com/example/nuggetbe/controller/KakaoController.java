@@ -1,5 +1,6 @@
 package com.example.nuggetbe.controller;
 
+import com.example.nuggetbe.dto.request.KakaoNicknameDto;
 import com.example.nuggetbe.dto.request.LoginDto;
 import com.example.nuggetbe.dto.request.SignUpDto;
 import com.example.nuggetbe.dto.response.*;
@@ -16,11 +17,12 @@ import org.springframework.web.bind.annotation.*;
 public class KakaoController {
     private final KakaoService memberService;
 
-    @GetMapping("/kakao/callback")
-    public BaseResponse<?> kakaoCallback(String code) {
+    @PostMapping("/kakao")
+    public BaseResponse<?> kakaoCallback(@RequestBody KakaoNicknameDto nickname) {
         try {
-            //code 이용 하여 oAuthAccessToken 얻어옴
-            CallbackResponse result = memberService.getKakaoToken(code);
+            //nickname받으면 회원 정보 return하는걸로 수정
+
+            CallbackResponse result = memberService.getKakaoToken(nickname.getNickname());
 
             return new BaseResponse<>(BaseResponseStatus.SUCCESS, result);
         } catch (BaseException e) {
