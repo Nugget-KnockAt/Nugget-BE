@@ -2,6 +2,7 @@ package com.example.nuggetbe.service;
 
 import com.example.nuggetbe.dto.response.*;
 import com.example.nuggetbe.entity.Member;
+import com.example.nuggetbe.entity.Role;
 import com.example.nuggetbe.repository.MemberRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;

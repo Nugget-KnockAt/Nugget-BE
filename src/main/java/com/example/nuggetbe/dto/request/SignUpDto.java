@@ -1,7 +1,6 @@
 package com.example.nuggetbe.dto.request;
 
-import com.example.nuggetbe.dto.response.Role;
-import com.example.nuggetbe.entity.KakaoOAuthToken;
+import com.example.nuggetbe.entity.Role;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;

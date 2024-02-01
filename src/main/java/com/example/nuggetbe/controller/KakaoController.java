@@ -1,6 +1,6 @@
 package com.example.nuggetbe.controller;
 
-import com.example.nuggetbe.dto.request.KakaoNicknameDto;
+import com.example.nuggetbe.dto.request.KakaoDto;
 import com.example.nuggetbe.dto.request.LoginDto;
 import com.example.nuggetbe.dto.request.SignUpDto;
 import com.example.nuggetbe.dto.response.*;
@@ -18,11 +18,11 @@ public class KakaoController {
     private final KakaoService memberService;
 
     @PostMapping("/kakao")
-    public BaseResponse<?> kakaoCallback(@RequestBody KakaoNicknameDto nickname) {
+    public BaseResponse<?> kakaoCallback(@RequestBody KakaoDto kakaoDto) {
         try {
             //nickname받으면 회원 정보 return하는걸로 수정
 
-            CallbackResponse result = memberService.getKakaoToken(nickname.getNickname());
+            CallbackResponse result = memberService.getKakaoToken(kakaoDto);
 
             return new BaseResponse<>(BaseResponseStatus.SUCCESS, result);
         } catch (BaseException e) {

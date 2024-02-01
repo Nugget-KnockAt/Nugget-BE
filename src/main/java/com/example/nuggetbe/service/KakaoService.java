@@ -1,24 +1,24 @@
 package com.example.nuggetbe.service;
 
 import com.example.nuggetbe.config.jwt.JwtTokenProvider;
+import com.example.nuggetbe.dto.request.KakaoDto;
 import com.example.nuggetbe.dto.request.LoginDto;
 import com.example.nuggetbe.dto.request.SignUpDto;
 import com.example.nuggetbe.dto.response.*;
 import com.example.nuggetbe.entity.KakaoOAuthToken;
 import com.example.nuggetbe.entity.KakaoOAuthProfile;
 import com.example.nuggetbe.entity.Member;
+import com.example.nuggetbe.entity.Role;
 import com.example.nuggetbe.repository.MemberRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -26,7 +26,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
@@ -51,7 +50,7 @@ public class KakaoService {
     private String KAKAO_REDIRECT_URL;
 
     @Transactional
-    public CallbackResponse getKakaoToken(String nickname) {
+    public CallbackResponse getKakaoToken(KakaoDto kakaoDto) {
         /*
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
@@ -78,34 +77,35 @@ public class KakaoService {
             //닉네임으로 역할 찾기
             */
 
-        Role role = checkRole(nickname);
+        Long kakaoId = kakaoDto.getSocialId();
+        Role role = checkRoleWithKakao(kakaoId);
         Long memberId = null;
 
 
         //역할에 따른 회원가입 혹은 로그인을 위한 과정
         if(role != Role.ROLE_NONE){
-
-            Member member = memberRepository.findByEmail(nickname);
-            Member member1 = memberRepository.findByName(nickname);
-
+            Member member = memberRepository.findBySocialId(kakaoId);
+            System.out.println("member222 : " + member);
             if (member != null) {
                 System.out.println("memberId : " + memberId);
                 memberId = member.getId();
-            }else if(member1 != null){
-                memberId = member1.getId();
             }
 
         } else{
+                System.out.println(kakaoDto.getNickname());
                 Member member = new Member();
-                member.setEmail(nickname);
-                member.setName(nickname);
+                member.setEmail(kakaoDto.getNickname());
+                member.setSocialId(kakaoId);
+                member.setName(kakaoDto.getNickname());
+                member.setSocialLogin(kakaoDto.getSocialLogin());
                 member.setPassword(passwordEncoder.encode("12345"));
                 member.setCreatedAt(LocalDateTime.now());
-                member.setRole(Role.ROLE_NONE);
+                member.setRole(Role.ROLE_NEED_TO_SIGNUP);
+
                 memberRepository.save(member);
+                System.out.println("1111111");
                 memberId = member.getId();
                 role = member.getRole();
-                System.out.println("member : " + memberId +"  "+ role);
             }
 
         CallbackResponse callbackResponse = CallbackResponse.builder()
@@ -144,12 +144,23 @@ public class KakaoService {
         Role role = null;
         if (member != null) {
             role = member.getRole();
-        }else if(member1 != null){
-            role = member1.getRole();
         }
         else {
             role = Role.ROLE_NONE;
         }
+        return role;
+    }
+    public Role checkRoleWithKakao(Long kakaoId) {
+        Member member = memberRepository.findBySocialId(kakaoId);
+        Role role = null;
+        System.out.println("member : " + member);
+        if (member != null) {
+            role = member.getRole();
+        }
+        else {
+            role = Role.ROLE_NONE;
+        }
+        System.out.println("role : " + role);
         return role;
     }
 

@@ -1,6 +1,5 @@
 package com.example.nuggetbe.entity;
 
-import com.example.nuggetbe.dto.response.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,11 +25,16 @@ public class Member{
     @Column(name = "member_id")
     private Long id;
 
+    @Column(nullable = true)
+    private Long socialId;
+
+    @Column(nullable = true)
+    private SocialLogin socialLogin;
 
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String name;
 
     @Column(nullable = true)
