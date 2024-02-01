@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(value = "/login/oauth2")
 public class KakaoController {
     private final KakaoService memberService;
-
+    /*
     @PostMapping("/kakao")
     public BaseResponse<?> kakaoCallback(@RequestBody KakaoDto kakaoDto) {
         try {
@@ -49,4 +49,6 @@ public class KakaoController {
             return new BaseResponse<>(e.getStatus());
         }
     }
+
+     */
 }

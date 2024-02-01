@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 @Service
 public class LoginService {
+    /*
 
     private final RestTemplate restTemplate = new RestTemplate();
 
@@ -126,4 +127,5 @@ public class LoginService {
 
         return restTemplate.exchange(resourceUri, HttpMethod.GET, entity, JsonNode.class).getBody();
     }
+    */
 }

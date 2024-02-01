@@ -4,8 +4,12 @@ package com.example.nuggetbe.controller;
 import com.example.nuggetbe.dto.request.ConnectionDto;
 import com.example.nuggetbe.dto.request.CustomTouchPostDto;
 import com.example.nuggetbe.dto.request.LoginDto;
+import com.example.nuggetbe.dto.request.member.LoginReq;
+import com.example.nuggetbe.dto.request.member.SignupReq;
 import com.example.nuggetbe.dto.response.*;
+import com.example.nuggetbe.dto.response.member.LoginRes;
 import com.example.nuggetbe.service.MemberService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +19,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
-import static org.apache.commons.lang3.StringUtils.isNumeric;
-
 @RestController
 @RequiredArgsConstructor
 @Slf4j
@@ -24,6 +26,39 @@ import static org.apache.commons.lang3.StringUtils.isNumeric;
 public class MemberController {
     @Autowired
     private MemberService memberService;
+
+    @PostMapping("/signUp")
+    public BaseResponse<?> signUp(@RequestBody @Valid SignupReq signupReq) {
+        try {
+            LoginRes result =  memberService.signUp(signupReq);
+            return new BaseResponse<>(BaseResponseStatus.SUCCESS, result);
+        } catch (BaseException e) {
+            return new BaseResponse(e.getStatus());
+        }
+    }
+
+    @PostMapping("/login")
+    public BaseResponse<?> login(@RequestBody LoginReq loginResponse) {
+        try {
+            LoginRes loginRes = memberService.login(loginResponse);
+            return new BaseResponse<>(BaseResponseStatus.SUCCESS, loginRes);
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    @GetMapping("/checkEmail")
+    public BaseResponse<?> checkEmail(@RequestParam String email) {
+        try {
+            Boolean notDuplicate = memberService.checkEmail(email);
+            if (notDuplicate.equals(true)) {
+                return new BaseResponse<>(BaseResponseStatus.SUCCESS, "이메일 사용 가능");
+            }
+            return new BaseResponse<>(BaseResponseStatus.DUPLICATE_EMAIL, "이메일 사용 불가능");
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
 
     @PostMapping("/connect")
     public BaseResponse<?> createConnection(@RequestBody ConnectionDto request) {

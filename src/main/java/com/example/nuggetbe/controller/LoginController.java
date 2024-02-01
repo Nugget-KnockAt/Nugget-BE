@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping(value = "/login/oauth2", produces = "application/json")
 public class LoginController {
+    /*
 
     private final LoginService loginService;
 
@@ -24,4 +25,6 @@ public class LoginController {
             return new BaseResponse<>(e.getStatus());
         }
     }
+
+     */
 }
