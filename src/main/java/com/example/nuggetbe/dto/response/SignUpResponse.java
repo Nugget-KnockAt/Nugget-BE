@@ -1,8 +1,8 @@
 package com.example.nuggetbe.dto.response;
 
+import com.example.nuggetbe.entity.Role;
 import lombok.*;
 
-import java.util.UUID;
 @Builder
 @Getter
 @Setter
