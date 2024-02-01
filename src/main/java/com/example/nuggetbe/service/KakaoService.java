@@ -36,6 +36,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Slf4j
 public class KakaoService {
+    /*
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -51,7 +52,6 @@ public class KakaoService {
 
     @Transactional
     public CallbackResponse getKakaoToken(KakaoDto kakaoDto) {
-        /*
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
             MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
@@ -75,7 +75,7 @@ public class KakaoService {
             String nickname = getOAuthInfo(kaKaoOAuthToken);
 
             //닉네임으로 역할 찾기
-            */
+
 
         Long kakaoId = kakaoDto.getSocialId();
         Role role = checkRoleWithKakao(kakaoId);
@@ -182,6 +182,7 @@ public class KakaoService {
                     .authenticate(usernamePasswordAuthenticationToken);
             SecurityContextHolder.getContext().setAuthentication(authentication);
             String jwt = jwtTokenProvider.createToken(authentication);
+
             // 생성된 액세스 토큰
             String accessToken = "Bearer " + jwtTokenProvider.createToken(authentication);
 
@@ -256,6 +257,7 @@ public class KakaoService {
 
         return signUpResponse;
     }
+    */
 
 }
 

@@ -21,15 +21,8 @@ import java.util.UUID;
 @Table(name = "member")
 public class Member{
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "member_id")
-    private Long id;
-
     @Column(nullable = true)
-    private Long socialId;
-
-    @Column(nullable = true)
-    private SocialLogin socialLogin;
+    private String email;
 
     @Column(nullable = false)
     private String password;
@@ -39,12 +32,6 @@ public class Member{
 
     @Column(nullable = true)
     private String phoneNumber;
-
-    @Column(nullable = true)
-    private String address;
-
-    @Column(nullable = true)
-    private String email;
 
     @Column(nullable = false)
     @CreatedDate

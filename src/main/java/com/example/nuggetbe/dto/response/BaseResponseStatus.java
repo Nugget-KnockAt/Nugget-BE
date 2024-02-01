@@ -31,7 +31,9 @@ public enum BaseResponseStatus {
     FAILED_TO_SAVE_CUSTOM_TOUCH(false,3006 ,"Failed to save custom touch" ),
     FAILED_TO_GET_CUSTOM_TOUCH(false,3007 ,"Failed to get custom touch" ),
     INVALID_UUID_FORMAT(false, 3008, "Invalid UUID format"),
-    FAILED_TO_DELETE_MEMBER(false, 3009, "Failed to delete member");
+    FAILED_TO_DELETE_MEMBER(false, 3009, "Failed to delete member"),
+    INVALID_USER(false, 3010, "Invalid User"),
+    USER_ALREADY_EXISTS(false, 3011, "User already exists");
 
 
 

@@ -1,7 +1,12 @@
 package com.example.nuggetbe.service;
 
 import com.example.nuggetbe.dto.request.CustomTouchPostDto;
+import com.example.nuggetbe.dto.request.member.LoginReq;
+import com.example.nuggetbe.dto.request.member.SignupReq;
+import com.example.nuggetbe.dto.response.BaseException;
 import com.example.nuggetbe.dto.response.GetCustomTouchResponse;
+import com.example.nuggetbe.dto.response.LoginResponse;
+import com.example.nuggetbe.dto.response.member.LoginRes;
 import com.example.nuggetbe.entity.Connection;
 import com.example.nuggetbe.entity.Member;
 import com.example.nuggetbe.entity.Message;
@@ -11,10 +16,18 @@ import com.example.nuggetbe.repository.MessageRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.apache.commons.lang3.StringUtils;
+import com.example.nuggetbe.config.jwt.JwtTokenProvider;
+import com.example.nuggetbe.dto.response.*;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -28,6 +41,13 @@ public class MemberService {
     private ConnectionRepository connectionRepository;
     @Autowired
     private MessageRepository messageRepository;
+    private final PasswordEncoder passwordEncoder;
+
+
+    private final AuthenticationManagerBuilder authenticationManagerBuilder;
+
+
+    private final JwtTokenProvider jwtTokenProvider;
 
 
     @Transactional
@@ -44,7 +64,6 @@ public class MemberService {
             connectionRepository.save(connection);
         }
     }
-
 
 
     public void saveCustomTouch(CustomTouchPostDto customTouchPostDto, Long memberId) {
@@ -97,5 +116,95 @@ public class MemberService {
                 .orElseThrow(() -> new IllegalArgumentException("Member not found with id: " + id));
 
         return member.getUuid();
+    }
+
+    public Boolean checkEmail(String email) {
+        Member member = memberRepository.findByEmail(email);
+        if (member == null) {
+            return true;
+        }
+        return false;
+    }
+
+    public LoginRes login(LoginReq loginRequest) {
+        Member member = memberRepository.findByEmail(loginRequest.getEmail());
+
+        if (member == null || !passwordEncoder.matches(loginRequest.getPassword(), member.getPassword())) {
+            throw new BaseException(BaseResponseStatus.INVALID_USER);
+        }
+
+        UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(member.getEmail(), loginRequest.getPassword());
+
+        try {
+            Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            String jwt = jwtTokenProvider.createToken(authentication);
+
+            // Generated access token
+            String accessToken = "Bearer " + jwt;
+
+            // Generated refresh token
+            String refreshToken = "Bearer " + jwtTokenProvider.createRefreshToken(authentication);
+
+            return LoginRes.builder()
+                    .accessToken(accessToken)
+                    .refreshToken(refreshToken)
+                    .role(member.getRole())
+                    .name(member.getName())
+                    .email(member.getEmail())
+                    .phoneNumber(member.getPhoneNumber())
+                    .build();
+        } catch (Exception e) {
+            throw new BaseException(BaseResponseStatus.INVALID_USER);
+        }
+    }
+
+
+    public LoginRes signUp(SignupReq signupRequest) {
+        try{
+            Member existingMember = memberRepository.findByEmail(signupRequest.getEmail());
+            if (existingMember != null) {
+                throw new BaseException(BaseResponseStatus.USER_ALREADY_EXISTS);
+            }
+
+            Member member = new Member();
+            member.setEmail(signupRequest.getEmail());
+            member.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
+            member.setName(signupRequest.getName());
+            member.setPhoneNumber(signupRequest.getPhoneNumber());
+            member.setRole(signupRequest.getRole());
+            member.setCreatedAt(LocalDateTime.now());
+            member.setUuid(UUID.randomUUID());
+
+            memberRepository.save(member);
+
+            UsernamePasswordAuthenticationToken authenticationToken =
+                    new UsernamePasswordAuthenticationToken(member.getEmail(), signupRequest.getPassword());
+
+
+            Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            String jwt = jwtTokenProvider.createToken(authentication);
+
+            // Generated access token
+            String accessToken = "Bearer " + jwt;
+
+            // Generated refresh token
+            String refreshToken = "Bearer " + jwtTokenProvider.createRefreshToken(authentication);
+
+            return LoginRes.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .role(member.getRole())
+                .name(member.getName())
+                .email(member.getEmail())
+                .phoneNumber(member.getPhoneNumber())
+                .build();
+    } catch (Exception e) {
+        throw new BaseException(BaseResponseStatus.INVALID_USER);
+    }
     }
 }
