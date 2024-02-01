@@ -91,4 +91,11 @@ public class MemberService {
 
         memberRepository.delete(member);
     }
+
+    public UUID getUuid(Long id) {
+        Member member = memberRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Member not found with id: " + id));
+
+        return member.getUuid();
+    }
 }

@@ -4,10 +4,7 @@ package com.example.nuggetbe.controller;
 import com.example.nuggetbe.dto.request.ConnectionDto;
 import com.example.nuggetbe.dto.request.CustomTouchPostDto;
 import com.example.nuggetbe.dto.request.LoginDto;
-import com.example.nuggetbe.dto.response.BaseException;
-import com.example.nuggetbe.dto.response.BaseResponse;
-import com.example.nuggetbe.dto.response.BaseResponseStatus;
-import com.example.nuggetbe.dto.response.GetCustomTouchResponse;
+import com.example.nuggetbe.dto.response.*;
 import com.example.nuggetbe.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -86,6 +83,19 @@ public class MemberController {
                 return new BaseResponse<>(BaseResponseStatus.SUCCESS, "회원 탈퇴 성공");
         } catch (BaseException e) {
             return new BaseResponse<>(BaseResponseStatus.FAILED_TO_DELETE_MEMBER, "회원 탈퇴 실패");
+        }
+    }
+
+    @GetMapping("/uuid")
+    public BaseResponse<?> getUuid() {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            Long id = Long.valueOf(authentication.getName());
+            UUID uuid = memberService.getUuid(id);
+            UuidResponse uuidResponse = new UuidResponse(uuid);
+            return new BaseResponse<>(BaseResponseStatus.SUCCESS, uuidResponse);
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
         }
     }
 
