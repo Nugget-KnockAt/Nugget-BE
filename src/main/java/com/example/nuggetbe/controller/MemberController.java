@@ -52,9 +52,9 @@ public class MemberController {
         try {
             Boolean notDuplicate = memberService.checkEmail(email);
             if (notDuplicate.equals(true)) {
-                return new BaseResponse<>(BaseResponseStatus.SUCCESS, "이메일 사용 가능");
+                return new BaseResponse<>(BaseResponseStatus.SUCCESS, true);
             }
-            return new BaseResponse<>(BaseResponseStatus.DUPLICATE_EMAIL, "이메일 사용 불가능");
+            return new BaseResponse<>(BaseResponseStatus.DUPLICATE_EMAIL, false);
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
