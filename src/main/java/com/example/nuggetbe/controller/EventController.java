@@ -38,25 +38,5 @@ public class EventController {
         }
     }
 
-    private final CopyOnWriteArrayList<SseEmitter> emitters = new CopyOnWriteArrayList<>();
-    @GetMapping("/notify")
-    public SseEmitter notifyUser() {
-        SseEmitter emitter = new SseEmitter();
-        this.emitters.add(emitter);
 
-        emitter.onCompletion(() -> this.emitters.remove(emitter));
-        emitter.onTimeout(() -> this.emitters.remove(emitter));
-
-        return emitter;
-    }
-
-    public void sendEventToClients(String location, String eventTime) {
-        for (SseEmitter emitter : emitters) {
-            try {
-                emitter.send(SseEmitter.event().data("Location: " + location + ", Time: " + eventTime));
-            } catch (IOException e) {
-                emitters.remove(emitter);
-            }
-        }
-    }
 }
