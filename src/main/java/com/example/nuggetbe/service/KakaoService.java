@@ -214,12 +214,14 @@ public class KakaoService {
         System.out.println("signUpDto : " + signUpDto.getPhoneNumber());
         System.out.println("signUpDto : " + signUpDto.getRole());
         Role role = signUpDto.getRole();
+        System.out.println("role : " + role);
         SignUpResponse signUpResponse = null;
         Member member = memberRepository.findById(signUpDto.getId()).orElseThrow(
                 () -> new BaseException(BaseResponseStatus.NO_SUCH_MEMBER));
 
 
         if(role == Role.ROLE_MEMBER){
+            System.out.println("roleMem : " + role);
             member.setEmail(signUpDto.getEmail());
             member.setName(signUpDto.getName());
             member.setPassword(passwordEncoder.encode("12345"));
@@ -236,6 +238,7 @@ public class KakaoService {
                     .role(member.getRole())
                     .build();
         }else if(role == Role.ROLE_GUARDIAN) {
+            System.out.println("roleGuard : " + role);
             member.setEmail(signUpDto.getEmail());
             member.setName(signUpDto.getName());
             member.setPassword(passwordEncoder.encode("12345"));
