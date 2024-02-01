@@ -194,10 +194,12 @@ public class KakaoService {
                     .accessToken(accessToken)
                     .refreshToken(refreshToken)
                     .email(member.getEmail())
+                    .name(member.getName())
+                    .address(member.getAddress())
+                    .phoneNumber(member.getPhoneNumber())
                     .uuid(member.getUuid())
                     .role(member.getRole())
                     .build();
-
         } catch (Exception e) {
             System.out.println("Authentication failed: " + e.getMessage());
             return null;

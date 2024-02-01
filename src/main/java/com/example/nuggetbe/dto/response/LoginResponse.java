@@ -13,7 +13,10 @@ import java.util.UUID;
 public class LoginResponse {
     String accessToken;
     String refreshToken;
+    String name;
     String email;
+    String phoneNumber;
+    String address;
     UUID uuid;
     Role role;
 }
