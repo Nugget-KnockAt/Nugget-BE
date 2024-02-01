@@ -10,6 +10,7 @@ import com.example.nuggetbe.dto.response.member.LoginRes;
 import com.example.nuggetbe.entity.Connection;
 import com.example.nuggetbe.entity.Member;
 import com.example.nuggetbe.entity.Message;
+import com.example.nuggetbe.entity.Role;
 import com.example.nuggetbe.repository.ConnectionRepository;
 import com.example.nuggetbe.repository.MemberRepository;
 import com.example.nuggetbe.repository.MessageRepository;
@@ -51,12 +52,11 @@ public class MemberService {
 
 
     @Transactional
-    public void createConnection(UUID uuid, Long id) {
+    public void createConnection(UUID uuid, String email) {
 
 
         Member member1 = memberRepository.findByUuid(uuid);
-        Member member2 = memberRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Member not found with id: " + id));
-
+        Member member2 = memberRepository.findByEmail(email);
         if (member1 != null && member2 != null) {
             Connection connection = new Connection();
             connection.setMember(member1);
@@ -66,10 +66,9 @@ public class MemberService {
     }
 
 
-    public void saveCustomTouch(CustomTouchPostDto customTouchPostDto, Long memberId) {
+    public void saveCustomTouch(CustomTouchPostDto customTouchPostDto, String email) {
 
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("Member not found with id: " + memberId));
+        Member member = memberRepository.findByEmail(email);
         System.out.println(member);
 
         processProperty(customTouchPostDto.getThird(), 3, member);
@@ -93,9 +92,8 @@ public class MemberService {
         }
     }
 
-    public GetCustomTouchResponse getCustomTouch(int touchCount, Long memberIdLong) {
-        Member member = memberRepository.findById(memberIdLong)
-                .orElseThrow(() -> new IllegalArgumentException("Member not found with id: " + memberIdLong));
+    public GetCustomTouchResponse getCustomTouch(int touchCount, String email) {
+        Member member = memberRepository.findByEmail(email);
 
         Message message = (Message) messageRepository.findByMemberAndTouchCount(member, touchCount).orElseThrow(() -> new IllegalArgumentException("Message not found with touchCount: " + touchCount));
 
@@ -104,16 +102,14 @@ public class MemberService {
                 .build();
     }
 
-    public void deleteMember(Long memberId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("Member not found with id: " + memberId));
+    public void deleteMember(String email) {
+        Member member = memberRepository.findByEmail(email);
 
         memberRepository.delete(member);
     }
 
-    public UUID getUuid(Long id) {
-        Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Member not found with id: " + id));
+    public UUID getUuid(String email) {
+        Member member = memberRepository.findByEmail(email);
 
         return member.getUuid();
     }
@@ -155,6 +151,7 @@ public class MemberService {
                     .name(member.getName())
                     .email(member.getEmail())
                     .phoneNumber(member.getPhoneNumber())
+                    .uuid(member.getUuid())
                     .build();
         } catch (Exception e) {
             throw new BaseException(BaseResponseStatus.INVALID_USER);
@@ -176,7 +173,9 @@ public class MemberService {
             member.setPhoneNumber(signupRequest.getPhoneNumber());
             member.setRole(signupRequest.getRole());
             member.setCreatedAt(LocalDateTime.now());
-            member.setUuid(UUID.randomUUID());
+            if(signupRequest.getRole() == Role.ROLE_MEMBER) {
+                member.setUuid(UUID.randomUUID());
+            }
 
             memberRepository.save(member);
 
@@ -196,13 +195,15 @@ public class MemberService {
             String refreshToken = "Bearer " + jwtTokenProvider.createRefreshToken(authentication);
 
             return LoginRes.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .role(member.getRole())
-                .name(member.getName())
-                .email(member.getEmail())
-                .phoneNumber(member.getPhoneNumber())
-                .build();
+
+                    .accessToken(accessToken)
+                    .refreshToken(refreshToken)
+                    .role(member.getRole())
+                    .name(member.getName())
+                    .email(member.getEmail())
+                    .phoneNumber(member.getPhoneNumber())
+                    .uuid(member.getUuid())
+                    .build();
     } catch (Exception e) {
         throw new BaseException(BaseResponseStatus.INVALID_USER);
     }
