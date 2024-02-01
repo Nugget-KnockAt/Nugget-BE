@@ -32,7 +32,7 @@ public class EventController {
             String id = authentication.getName();
 
             eventService.createEvent(eventDto.getLocationInfo(), id);
-            return new BaseResponse<>(BaseResponseStatus.SUCCESS);
+            return new BaseResponse<>(BaseResponseStatus.SUCCESS, "이벤트 생성 성공");
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
