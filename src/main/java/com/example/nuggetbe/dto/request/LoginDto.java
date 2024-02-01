@@ -17,7 +17,7 @@ public class LoginDto {
 
     @JsonProperty
     @NotNull
-    private Long id;
+    private String email;
 
 
 }

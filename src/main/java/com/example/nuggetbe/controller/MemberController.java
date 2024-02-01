@@ -65,10 +65,8 @@ public class MemberController {
         try {
             UUID uuid = UUID.fromString(request.getUuid());
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if (authentication != null && authentication.isAuthenticated()) {
-                Long memberId = Long.valueOf(authentication.getName());
+            String memberId = authentication.getName();
                 memberService.createConnection(uuid, memberId);
-            }
             return new BaseResponse<>(BaseResponseStatus.SUCCESS, "연결 성공");
         } catch (IllegalArgumentException e) {
             log.error("Error in createConnection: Invalid UUID string", e);
@@ -84,12 +82,9 @@ public class MemberController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             System.out.println(authentication);
             System.out.println(authentication.getName());
-            if (authentication != null && authentication.isAuthenticated()) {
-                Long memberId = Long.valueOf(authentication.getName());
-                memberService.saveCustomTouch(customTouchPostDto, memberId);
-                return new BaseResponse<>(BaseResponseStatus.SUCCESS, "커스텀 터치 저장 성공");
-            }
-            return new BaseResponse<>(BaseResponseStatus.FAILED_TO_SAVE_CUSTOM_TOUCH);
+            String memberId = authentication.getName();
+            memberService.saveCustomTouch(customTouchPostDto, memberId);
+            return new BaseResponse<>(BaseResponseStatus.SUCCESS, "커스텀 터치 저장 성공");
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
@@ -100,11 +95,9 @@ public class MemberController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             System.out.println(authentication);
             System.out.println(authentication.getName());
-            if (authentication != null && authentication.isAuthenticated()) {
-                Long memberId = Long.valueOf(authentication.getName());
-                GetCustomTouchResponse getCustomTouchResponse = memberService.getCustomTouch(touchCount, memberId);
-                return new BaseResponse<>(BaseResponseStatus.SUCCESS, getCustomTouchResponse);
-            } return new BaseResponse<>(BaseResponseStatus.FAILED_TO_GET_CUSTOM_TOUCH);
+            String memberId = authentication.getName();
+            GetCustomTouchResponse getCustomTouchResponse = memberService.getCustomTouch(touchCount, memberId);
+            return new BaseResponse<>(BaseResponseStatus.SUCCESS, getCustomTouchResponse);
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
@@ -113,9 +106,9 @@ public class MemberController {
     @PostMapping("/deleteMember")
     public BaseResponse<?> deleteMember(@RequestBody LoginDto loginDto) {
         try {
-             Long memberId = loginDto.getId();
-                memberService.deleteMember(memberId);
-                return new BaseResponse<>(BaseResponseStatus.SUCCESS, "회원 탈퇴 성공");
+            String memberId = loginDto.getEmail();
+            memberService.deleteMember(memberId);
+            return new BaseResponse<>(BaseResponseStatus.SUCCESS, "회원 탈퇴 성공");
         } catch (BaseException e) {
             return new BaseResponse<>(BaseResponseStatus.FAILED_TO_DELETE_MEMBER, "회원 탈퇴 실패");
         }
@@ -125,8 +118,8 @@ public class MemberController {
     public BaseResponse<?> getUuid() {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            Long id = Long.valueOf(authentication.getName());
-            UUID uuid = memberService.getUuid(id);
+            String memberId = authentication.getName();
+            UUID uuid = memberService.getUuid(memberId);
             UuidResponse uuidResponse = new UuidResponse(uuid);
             return new BaseResponse<>(BaseResponseStatus.SUCCESS, uuidResponse);
         } catch (BaseException e) {
