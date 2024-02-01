@@ -167,8 +167,7 @@ public class KakaoService {
 
     public LoginResponse login(LoginDto loginDto) {
 
-        Member member = memberRepository.findById(loginDto.getId()).orElseThrow(
-                () -> new BaseException(BaseResponseStatus.NO_SUCH_MEMBER));
+        Member member = memberRepository.findBySocialId(loginDto.getId());
 
         if (!passwordEncoder.matches("12345", member.getPassword())) {
             throw new BaseException(BaseResponseStatus.WRONG_PASSWORD);
@@ -218,7 +217,6 @@ public class KakaoService {
         System.out.println("role : " + role);
         SignUpResponse signUpResponse = null;
         Member member = memberRepository.findBySocialId(signUpDto.getId());
-
 
         if(role == Role.ROLE_MEMBER){
             System.out.println("roleMem : " + role);
