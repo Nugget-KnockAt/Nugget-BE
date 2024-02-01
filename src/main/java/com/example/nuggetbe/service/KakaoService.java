@@ -208,6 +208,7 @@ public class KakaoService {
 
     @Transactional
     public SignUpResponse signUp(SignUpDto signUpDto) {
+
         System.out.println("signUpDto : " + signUpDto.getAddress());
         System.out.println("signUpDto : " + signUpDto.getName());
         System.out.println("signUpDto : " + signUpDto.getEmail());
@@ -216,8 +217,7 @@ public class KakaoService {
         Role role = signUpDto.getRole();
         System.out.println("role : " + role);
         SignUpResponse signUpResponse = null;
-        Member member = memberRepository.findById(signUpDto.getId()).orElseThrow(
-                () -> new BaseException(BaseResponseStatus.NO_SUCH_MEMBER));
+        Member member = memberRepository.findBySocialId(signUpDto.getId());
 
 
         if(role == Role.ROLE_MEMBER){
