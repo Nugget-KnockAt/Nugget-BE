@@ -208,6 +208,11 @@ public class KakaoService {
 
     @Transactional
     public SignUpResponse signUp(SignUpDto signUpDto) {
+        System.out.println("signUpDto : " + signUpDto.getAddress());
+        System.out.println("signUpDto : " + signUpDto.getName());
+        System.out.println("signUpDto : " + signUpDto.getEmail());
+        System.out.println("signUpDto : " + signUpDto.getPhoneNumber());
+        System.out.println("signUpDto : " + signUpDto.getRole());
         Role role = signUpDto.getRole();
         SignUpResponse signUpResponse = null;
         Member member = memberRepository.findById(signUpDto.getId()).orElseThrow(
