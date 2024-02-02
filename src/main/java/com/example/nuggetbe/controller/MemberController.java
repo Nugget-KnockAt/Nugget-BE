@@ -38,9 +38,9 @@ public class MemberController {
     }
 
     @PostMapping("/login")
-    public BaseResponse<?> login(@RequestBody LoginReq loginResponse) {
+    public BaseResponse<?> login(@RequestBody LoginReq loginReq) {
         try {
-            LoginRes loginRes = memberService.login(loginResponse);
+            LoginRes loginRes = memberService.login(loginReq);
             return new BaseResponse<>(BaseResponseStatus.SUCCESS, loginRes);
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
