@@ -202,6 +202,11 @@ public class MemberService {
             // Generated refresh token
             String refreshToken = "Bearer " + jwtTokenProvider.createRefreshToken(authentication);
 
+            List<Connection> connections = member.getConnections();
+            List<Member> guardianList = connections.stream()
+                    .map(Connection::getGuardian)
+                    .toList();
+
             return LoginRes.builder()
 
                     .accessToken(accessToken)
@@ -211,6 +216,7 @@ public class MemberService {
                     .email(member.getEmail())
                     .phoneNumber(member.getPhoneNumber())
                     .uuid(member.getUuid())
+                    .guardianList(guardianList)
                     .build();
     } catch (Exception e) {
         throw new BaseException(BaseResponseStatus.INVALID_USER);
