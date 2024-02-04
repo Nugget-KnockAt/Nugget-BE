@@ -1,8 +1,11 @@
 package com.example.nuggetbe.dto.response.member;
 
+import com.example.nuggetbe.entity.Connection;
+import com.example.nuggetbe.entity.Member;
 import com.example.nuggetbe.entity.Role;
 import lombok.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @Builder
@@ -18,4 +21,5 @@ public class LoginRes {
     private String name;
     private String phoneNumber;
     private Role role;
+    private List<Member> guardianList;
 }

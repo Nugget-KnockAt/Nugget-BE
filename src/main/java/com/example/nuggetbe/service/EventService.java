@@ -14,7 +14,7 @@ public class EventService {
 
     private final EventRepository eventRepository;
     private final MemberRepository memberRepository;
-    public void createEvent(String locationInfo, String email) {
+    public Event createEvent(String locationInfo, String email) {
 
         Event event = new Event();
 
@@ -23,5 +23,7 @@ public class EventService {
         event.setCreatedAt(LocalDateTime.now());
 
         eventRepository.save(event);
+
+        return event;
     }
 }

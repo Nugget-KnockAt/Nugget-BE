@@ -1,19 +1,18 @@
 package com.example.nuggetbe.controller;
 
+import com.example.nuggetbe.dto.response.EventResponse;
+import com.example.nuggetbe.service.SseEmitters;
 import com.example.nuggetbe.dto.request.EventDto;
 import com.example.nuggetbe.dto.response.BaseException;
 import com.example.nuggetbe.dto.response.BaseResponse;
 import com.example.nuggetbe.dto.response.BaseResponseStatus;
+import com.example.nuggetbe.entity.Event;
 import com.example.nuggetbe.service.EventService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.web.JsonPath;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-import java.io.IOException;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 @RequiredArgsConstructor
 @RestController
@@ -22,6 +21,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class EventController {
 
     private final EventService eventService;
+    private final SseEmitters sseEmitters;
 
     @PostMapping("/event")
     public BaseResponse<?> createEvent(@RequestBody EventDto eventDto) {
@@ -31,8 +31,12 @@ public class EventController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String id = authentication.getName();
 
-            eventService.createEvent(eventDto.getLocationInfo(), id);
-            return new BaseResponse<>(BaseResponseStatus.SUCCESS, "이벤트 생성 성공");
+            Event event = eventService.createEvent(eventDto.getLocationInfo(), id);
+
+            // sse
+            EventResponse eventResponse = sseEmitters.sentEvent(id, event.getLocationInfo());
+
+            return new BaseResponse<>(BaseResponseStatus.SUCCESS, eventResponse);
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }

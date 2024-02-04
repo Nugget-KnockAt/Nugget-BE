@@ -29,8 +29,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -144,6 +146,11 @@ public class MemberService {
             // Generated refresh token
             String refreshToken = "Bearer " + jwtTokenProvider.createRefreshToken(authentication);
 
+            List<Connection> connections = member.getConnections();
+            List<Member> guardianList = connections.stream()
+                    .map(Connection::getGuardian)
+                    .toList();
+
             return LoginRes.builder()
                     .accessToken(accessToken)
                     .refreshToken(refreshToken)
@@ -152,6 +159,7 @@ public class MemberService {
                     .email(member.getEmail())
                     .phoneNumber(member.getPhoneNumber())
                     .uuid(member.getUuid())
+                    .guardianList(guardianList)
                     .build();
         } catch (Exception e) {
             throw new BaseException(BaseResponseStatus.INVALID_USER);
@@ -194,6 +202,11 @@ public class MemberService {
             // Generated refresh token
             String refreshToken = "Bearer " + jwtTokenProvider.createRefreshToken(authentication);
 
+            List<Connection> connections = member.getConnections();
+            List<Member> guardianList = connections.stream()
+                    .map(Connection::getGuardian)
+                    .toList();
+
             return LoginRes.builder()
 
                     .accessToken(accessToken)
@@ -203,6 +216,7 @@ public class MemberService {
                     .email(member.getEmail())
                     .phoneNumber(member.getPhoneNumber())
                     .uuid(member.getUuid())
+                    .guardianList(guardianList)
                     .build();
     } catch (Exception e) {
         throw new BaseException(BaseResponseStatus.INVALID_USER);
