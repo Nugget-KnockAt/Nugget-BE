@@ -93,8 +93,6 @@ public class MemberController {
     public BaseResponse<?> getCustomTouch(@PathVariable int touchCount) {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            System.out.println(authentication);
-            System.out.println(authentication.getName());
             String memberId = authentication.getName();
             GetCustomTouchResponse getCustomTouchResponse = memberService.getCustomTouch(touchCount, memberId);
             return new BaseResponse<>(BaseResponseStatus.SUCCESS, getCustomTouchResponse);
@@ -103,10 +101,11 @@ public class MemberController {
         }
     }
 
-    @PostMapping("/deleteMember")
-    public BaseResponse<?> deleteMember(@RequestBody LoginDto loginDto) {
+    @GetMapping("/deleteMember")
+    public BaseResponse<?> deleteMember() {
         try {
-            String memberId = loginDto.getEmail();
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String memberId = authentication.getName();
             memberService.deleteMember(memberId);
             return new BaseResponse<>(BaseResponseStatus.SUCCESS, "회원 탈퇴 성공");
         } catch (BaseException e) {
