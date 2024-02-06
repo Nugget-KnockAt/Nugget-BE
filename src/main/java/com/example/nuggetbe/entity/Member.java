@@ -39,7 +39,10 @@ public class Member{
     private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<Connection> connections = new ArrayList<>();
+    private List<Connection> connectionMembers = new ArrayList<>();
+
+    @OneToMany(mappedBy = "guardian", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<Connection> connectionGuardians = new ArrayList<>();
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Event> events = new ArrayList<>();

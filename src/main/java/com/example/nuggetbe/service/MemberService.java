@@ -148,10 +148,22 @@ public class MemberService {
             // Generated refresh token
             String refreshToken = "Bearer " + jwtTokenProvider.createRefreshToken(authentication);
 
-            List<Connection> connections = member.getConnections();
-            List<Member> guardianList = connections.stream()
-                    .map(Connection::getGuardian)
-                    .toList();
+            List<Connection> connections;
+            List<String> connectionList;
+
+            if (member.getRole() == Role.ROLE_MEMBER) {
+                connections = member.getConnectionMembers();
+
+                connectionList = connections.stream()
+                        .map(connection -> connection.getGuardian().getName())
+                        .toList();
+            } else {
+                connections = member.getConnectionGuardians();
+
+                connectionList = connections.stream()
+                        .map(connection -> connection.getMember().getName())
+                        .toList();
+            }
 
             return LoginRes.builder()
                     .accessToken(accessToken)
@@ -161,7 +173,7 @@ public class MemberService {
                     .email(member.getEmail())
                     .phoneNumber(member.getPhoneNumber())
                     .uuid(member.getUuid())
-                    .guardianList(guardianList)
+                    .connectionList(connectionList)
                     .build();
         } catch (Exception e) {
             throw new BaseException(BaseResponseStatus.INVALID_USER);
@@ -204,10 +216,22 @@ public class MemberService {
             // Generated refresh token
             String refreshToken = "Bearer " + jwtTokenProvider.createRefreshToken(authentication);
 
-            List<Connection> connections = member.getConnections();
-            List<Member> guardianList = connections.stream()
-                    .map(Connection::getGuardian)
-                    .toList();
+            List<Connection> connections;
+            List<String> connectionList;
+
+            if (member.getRole() == Role.ROLE_MEMBER) {
+                connections = member.getConnectionMembers();
+
+                connectionList = connections.stream()
+                        .map(connection -> connection.getGuardian().getName())
+                        .toList();
+            } else {
+                connections = member.getConnectionGuardians();
+
+                connectionList = connections.stream()
+                        .map(connection -> connection.getMember().getName())
+                        .toList();
+            }
 
             return LoginRes.builder()
 
@@ -218,7 +242,7 @@ public class MemberService {
                     .email(member.getEmail())
                     .phoneNumber(member.getPhoneNumber())
                     .uuid(member.getUuid())
-                    .guardianList(guardianList)
+                    .connectionList(connectionList)
                     .build();
     } catch (Exception e) {
         throw new BaseException(BaseResponseStatus.INVALID_USER);

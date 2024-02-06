@@ -46,7 +46,7 @@ public class SseEmitters {
     public EventResponse sentEvent(String userEmail, String locationInfo) {
         Member member = memberRepository.findByEmail(userEmail);
 
-        List<Connection> connections = member.getConnections();
+        List<Connection> connections = member.getConnectionGuardians();
         List<Member> guardianList = connections.stream()
                 .map(Connection::getGuardian)
                 .toList();
