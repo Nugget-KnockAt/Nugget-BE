@@ -56,17 +56,19 @@ public class MemberService {
     @Transactional
     public void createConnection(UUID uuid, String email) {
 
+        Member member = memberRepository.findByUuid(uuid);
+        Member guardian = memberRepository.findByEmail(email);
 
-        Member member1 = memberRepository.findByUuid(uuid);
-        Member member2 = memberRepository.findByEmail(email);
-        if (member1 != null && member2 != null) {
+        System.out.println(member.getEmail());
+        System.out.println(guardian.getEmail());
+
+        if (member != null && guardian != null) {
             Connection connection = new Connection();
-            connection.setMember(member1);
-            connection.setGuardian(member2);
+            connection.setMember(member);
+            connection.setGuardian(guardian);
             connectionRepository.save(connection);
         }
     }
-
 
     public void saveCustomTouch(CustomTouchPostDto customTouchPostDto, String email) {
 

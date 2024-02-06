@@ -41,6 +41,4 @@ public class EventController {
             return new BaseResponse<>(e.getStatus());
         }
     }
-
-
 }

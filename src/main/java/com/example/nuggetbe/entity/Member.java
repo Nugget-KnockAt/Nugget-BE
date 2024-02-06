@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Type;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
@@ -52,6 +53,6 @@ public class Member{
     @Column(nullable = false)
     private Role role;
 
-    @Column(nullable = true, length = 36)
+    @Column(nullable = true, length = 36, columnDefinition = "BINARY(16)")
     private UUID uuid;
 }
