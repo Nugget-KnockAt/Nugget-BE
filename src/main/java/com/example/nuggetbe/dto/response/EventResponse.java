@@ -13,5 +13,5 @@ import java.util.List;
 public class EventResponse {
 
     private String eventLocation;
-    private List<Member> guardianList;
+    private List<String> guardianList;
 }
