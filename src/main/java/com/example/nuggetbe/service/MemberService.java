@@ -72,9 +72,9 @@ public class MemberService {
     public void saveCustomTouch(CustomTouchPostDto customTouchPostDto, String email) {
 
         Member member = memberRepository.findByEmail(email);
-        System.out.println(member);
 
-        Message message = new Message();
+        Message message = (Message) messageRepository.findByMemberAndAction(member, customTouchPostDto.getAction()).orElse(new Message());
+
         message.setMember(member);
         message.setAction(customTouchPostDto.getAction());
         message.setText(customTouchPostDto.getText());
