@@ -74,12 +74,14 @@ public class MemberService {
         Member member = memberRepository.findByEmail(email);
         System.out.println(member);
 
-        processProperty(customTouchPostDto.getThird(), 3, member);
-        processProperty(customTouchPostDto.getFourth(), 4, member);
-        processProperty(customTouchPostDto.getFifth(), 5, member);
-        processProperty(customTouchPostDto.getSixth(), 6, member);
+        Message message = new Message();
+        message.setMember(member);
+        message.setAction(customTouchPostDto.getAction());
+        message.setText(customTouchPostDto.getText());
+        messageRepository.save(message);
     }
 
+    /*
     private void processProperty(String propertyValue, int touchCount, Member member) {
         Optional<Message> result = messageRepository.findByMemberAndTouchCount(member, touchCount);
 
@@ -94,13 +96,15 @@ public class MemberService {
             messageRepository.save(message);
         }
     }
+    */
 
-    public GetCustomTouchResponse getCustomTouch(int touchCount, String email) {
+    public GetCustomTouchResponse getCustomTouch(String action, String email) {
         Member member = memberRepository.findByEmail(email);
 
-        Message message = (Message) messageRepository.findByMemberAndTouchCount(member, touchCount).orElseThrow(() -> new IllegalArgumentException("Message not found with touchCount: " + touchCount));
+        Message message = (Message) messageRepository.findByMemberAndAction(member, action).orElseThrow(() -> new IllegalArgumentException("Message not found with action: " + action));
 
         return GetCustomTouchResponse.builder()
+                .action(message.getAction())
                 .text(message.getText())
                 .build();
     }
