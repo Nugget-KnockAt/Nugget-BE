@@ -1,6 +1,8 @@
 package com.example.nuggetbe.service;
 
 import com.example.nuggetbe.dto.request.CustomTouchPostDto;
+import com.example.nuggetbe.dto.request.EmailInfoReq;
+import com.example.nuggetbe.dto.request.EmailInfoRes;
 import com.example.nuggetbe.dto.request.member.LoginReq;
 import com.example.nuggetbe.dto.request.member.SignupReq;
 import com.example.nuggetbe.dto.response.BaseException;
@@ -116,6 +118,17 @@ public class MemberService {
         Member member = memberRepository.findByEmail(email);
 
         return member.getUuid();
+    }
+
+    public EmailInfoRes getUserInfo(EmailInfoReq emailInfoReq) {
+        Member member = memberRepository.findByEmail(emailInfoReq.getEmail());
+
+        return EmailInfoRes.builder()
+                .email(member.getEmail())
+                .name(member.getName())
+                .phoneNumber(member.getPhoneNumber())
+                .uuid(member.getUuid())
+                .build();
     }
 
     public Boolean checkEmail(String email) {
