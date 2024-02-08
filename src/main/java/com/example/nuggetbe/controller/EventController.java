@@ -1,11 +1,9 @@
 package com.example.nuggetbe.controller;
 
-import com.example.nuggetbe.dto.response.EventResponse;
+import com.example.nuggetbe.dto.request.EmailDto;
+import com.example.nuggetbe.dto.response.*;
 import com.example.nuggetbe.service.SseEmitters;
 import com.example.nuggetbe.dto.request.EventDto;
-import com.example.nuggetbe.dto.response.BaseException;
-import com.example.nuggetbe.dto.response.BaseResponse;
-import com.example.nuggetbe.dto.response.BaseResponseStatus;
 import com.example.nuggetbe.entity.Event;
 import com.example.nuggetbe.service.EventService;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -37,6 +37,19 @@ public class EventController {
             EventResponse eventResponse = sseEmitters.sentEvent(id, event.getLocationInfo());
 
             return new BaseResponse<>(BaseResponseStatus.SUCCESS, eventResponse);
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    @GetMapping("/event")
+    public BaseResponse<?> readEvent(@RequestBody EmailDto emailDto) {
+        try {
+            String memberEmail = emailDto.getEmail();
+
+            List<EventsRes> eventsResList = eventService.readEvents(memberEmail);
+
+            return new BaseResponse<>(BaseResponseStatus.SUCCESS, eventsResList);
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
