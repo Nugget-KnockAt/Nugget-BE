@@ -1,13 +1,11 @@
 package com.example.nuggetbe.service;
 
 import com.example.nuggetbe.dto.request.CustomTouchPostDto;
-import com.example.nuggetbe.dto.request.EmailInfoReq;
 import com.example.nuggetbe.dto.request.EmailInfoRes;
 import com.example.nuggetbe.dto.request.member.LoginReq;
 import com.example.nuggetbe.dto.request.member.SignupReq;
 import com.example.nuggetbe.dto.response.BaseException;
 import com.example.nuggetbe.dto.response.GetCustomTouchResponse;
-import com.example.nuggetbe.dto.response.LoginResponse;
 import com.example.nuggetbe.dto.response.member.LoginRes;
 import com.example.nuggetbe.entity.Connection;
 import com.example.nuggetbe.entity.Member;
@@ -34,7 +32,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -120,8 +117,8 @@ public class MemberService {
         return member.getUuid();
     }
 
-    public EmailInfoRes getUserInfo(EmailInfoReq emailInfoReq) {
-        Member member = memberRepository.findByEmail(emailInfoReq.getEmail());
+    public EmailInfoRes getUserInfo(String email) {
+        Member member = memberRepository.findByEmail(email);
 
         return EmailInfoRes.builder()
                 .email(member.getEmail())

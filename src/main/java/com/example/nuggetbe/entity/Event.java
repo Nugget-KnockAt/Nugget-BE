@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -30,5 +31,9 @@ public class Event {
     @Column(nullable = false)
     @CreatedDate
     private LocalDateTime createdAt;
+
+    private BigDecimal latitude;
+
+    private BigDecimal longitude;
 
 }
