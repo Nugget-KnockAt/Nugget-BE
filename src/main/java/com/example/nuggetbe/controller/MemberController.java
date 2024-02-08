@@ -1,9 +1,10 @@
 package com.example.nuggetbe.controller;
 
 
+import com.example.nuggetbe.dto.request.EmailInfoReq;
 import com.example.nuggetbe.dto.request.ConnectionDto;
 import com.example.nuggetbe.dto.request.CustomTouchPostDto;
-import com.example.nuggetbe.dto.request.LoginDto;
+import com.example.nuggetbe.dto.request.EmailInfoRes;
 import com.example.nuggetbe.dto.request.member.LoginReq;
 import com.example.nuggetbe.dto.request.member.SignupReq;
 import com.example.nuggetbe.dto.response.*;
@@ -34,6 +35,16 @@ public class MemberController {
             return new BaseResponse<>(BaseResponseStatus.SUCCESS, result);
         } catch (BaseException e) {
             return new BaseResponse(e.getStatus());
+        }
+    }
+
+    @GetMapping("/info")
+    public BaseResponse<?> info(@RequestBody EmailInfoReq emailInfoReq) {
+        try {
+            EmailInfoRes result = memberService.getUserInfo(emailInfoReq);
+            return new BaseResponse<>(BaseResponseStatus.SUCCESS, result);
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
         }
     }
 

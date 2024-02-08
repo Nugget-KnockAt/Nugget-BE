@@ -46,18 +46,18 @@ public class SseEmitters {
     public EventResponse sentEvent(String userEmail, String locationInfo) {
         Member member = memberRepository.findByEmail(userEmail);
 
-        List<Connection> connections = member.getConnectionGuardians();
-        List<Member> guardianList = connections.stream()
-                .map(Connection::getGuardian)
+        List<Connection> connections = member.getConnectionMembers();
+        List<String> connectionList = connections.stream()
+                .map(connection -> connection.getGuardian().getEmail())
                 .toList();
 
-        List<SseEmitter> guardianEmitters = guardianList.stream()
-                .map(guardian -> emitters.get(guardian.getEmail()))
+        List<SseEmitter> connectionEmitters = connectionList.stream()
+                .map(guardian -> emitters.get(guardian))
                 .filter(Objects::nonNull)
                 .toList();
 
         String jsonData = "{\"event\": \"피보호자에게" + locationInfo + "에서 이벤트가 발생했습니다.\"}";
-        guardianEmitters.forEach(emitter -> {
+        connectionEmitters.forEach(emitter -> {
             try {
                 emitter.send(SseEmitter.event()
                         .data(jsonData, MediaType.APPLICATION_JSON));
@@ -67,7 +67,7 @@ public class SseEmitters {
         });
 
         return EventResponse.builder()
-                .guardianList(guardianList)
+                .guardianList(connectionList)
                 .eventLocation(locationInfo)
                 .build();
     }

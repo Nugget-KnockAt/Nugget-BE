@@ -1,6 +1,8 @@
 package com.example.nuggetbe.service;
 
 import com.example.nuggetbe.dto.request.CustomTouchPostDto;
+import com.example.nuggetbe.dto.request.EmailInfoReq;
+import com.example.nuggetbe.dto.request.EmailInfoRes;
 import com.example.nuggetbe.dto.request.member.LoginReq;
 import com.example.nuggetbe.dto.request.member.SignupReq;
 import com.example.nuggetbe.dto.response.BaseException;
@@ -118,6 +120,17 @@ public class MemberService {
         return member.getUuid();
     }
 
+    public EmailInfoRes getUserInfo(EmailInfoReq emailInfoReq) {
+        Member member = memberRepository.findByEmail(emailInfoReq.getEmail());
+
+        return EmailInfoRes.builder()
+                .email(member.getEmail())
+                .name(member.getName())
+                .phoneNumber(member.getPhoneNumber())
+                .uuid(member.getUuid())
+                .build();
+    }
+
     public Boolean checkEmail(String email) {
         Member member = memberRepository.findByEmail(email);
         if (member == null) {
@@ -155,13 +168,13 @@ public class MemberService {
                 connections = member.getConnectionMembers();
 
                 connectionList = connections.stream()
-                        .map(connection -> connection.getGuardian().getName())
+                        .map(connection -> connection.getGuardian().getEmail())
                         .toList();
             } else {
                 connections = member.getConnectionGuardians();
 
                 connectionList = connections.stream()
-                        .map(connection -> connection.getMember().getName())
+                        .map(connection -> connection.getMember().getEmail())
                         .toList();
             }
 
@@ -223,13 +236,13 @@ public class MemberService {
                 connections = member.getConnectionMembers();
 
                 connectionList = connections.stream()
-                        .map(connection -> connection.getGuardian().getName())
+                        .map(connection -> connection.getGuardian().getEmail())
                         .toList();
             } else {
                 connections = member.getConnectionGuardians();
 
                 connectionList = connections.stream()
-                        .map(connection -> connection.getMember().getName())
+                        .map(connection -> connection.getMember().getEmail())
                         .toList();
             }
 
