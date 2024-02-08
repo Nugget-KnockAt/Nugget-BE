@@ -155,13 +155,13 @@ public class MemberService {
                 connections = member.getConnectionMembers();
 
                 connectionList = connections.stream()
-                        .map(connection -> connection.getGuardian().getName())
+                        .map(connection -> connection.getGuardian().getEmail())
                         .toList();
             } else {
                 connections = member.getConnectionGuardians();
 
                 connectionList = connections.stream()
-                        .map(connection -> connection.getMember().getName())
+                        .map(connection -> connection.getMember().getEmail())
                         .toList();
             }
 
@@ -223,13 +223,13 @@ public class MemberService {
                 connections = member.getConnectionMembers();
 
                 connectionList = connections.stream()
-                        .map(connection -> connection.getGuardian().getName())
+                        .map(connection -> connection.getGuardian().getEmail())
                         .toList();
             } else {
                 connections = member.getConnectionGuardians();
 
                 connectionList = connections.stream()
-                        .map(connection -> connection.getMember().getName())
+                        .map(connection -> connection.getMember().getEmail())
                         .toList();
             }
 
