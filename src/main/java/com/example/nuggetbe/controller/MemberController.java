@@ -1,7 +1,6 @@
 package com.example.nuggetbe.controller;
 
 
-import com.example.nuggetbe.dto.request.EmailInfoReq;
 import com.example.nuggetbe.dto.request.ConnectionDto;
 import com.example.nuggetbe.dto.request.CustomTouchPostDto;
 import com.example.nuggetbe.dto.request.EmailInfoRes;
@@ -39,9 +38,9 @@ public class MemberController {
     }
 
     @GetMapping("/info")
-    public BaseResponse<?> info(@RequestBody EmailInfoReq emailInfoReq) {
+    public BaseResponse<?> info(@RequestParam String email) {
         try {
-            EmailInfoRes result = memberService.getUserInfo(emailInfoReq);
+            EmailInfoRes result = memberService.getUserInfo(email);
             return new BaseResponse<>(BaseResponseStatus.SUCCESS, result);
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());

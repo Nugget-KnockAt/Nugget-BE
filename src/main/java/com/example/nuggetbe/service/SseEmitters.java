@@ -2,6 +2,7 @@ package com.example.nuggetbe.service;
 
 import com.example.nuggetbe.dto.response.EventResponse;
 import com.example.nuggetbe.entity.Connection;
+import com.example.nuggetbe.entity.Event;
 import com.example.nuggetbe.entity.Member;
 import com.example.nuggetbe.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +44,7 @@ public class SseEmitters {
         return emitter;
     }
 
-    public EventResponse sentEvent(String userEmail, String locationInfo) {
+    public EventResponse sentEvent(String userEmail, Event event) {
         Member member = memberRepository.findByEmail(userEmail);
 
         List<Connection> connections = member.getConnectionMembers();
@@ -56,7 +57,7 @@ public class SseEmitters {
                 .filter(Objects::nonNull)
                 .toList();
 
-        String jsonData = "{\"event\": \"피보호자에게" + locationInfo + "에서 이벤트가 발생했습니다.\"}";
+        String jsonData = "{\"event\": \"피보호자에게" + event.getLocationInfo() + "에서 이벤트가 발생했습니다.\"}";
         connectionEmitters.forEach(emitter -> {
             try {
                 emitter.send(SseEmitter.event()
@@ -68,7 +69,9 @@ public class SseEmitters {
 
         return EventResponse.builder()
                 .guardianList(connectionList)
-                .eventLocation(locationInfo)
+                .eventLocation(event.getLocationInfo())
+                .latitude(event.getLatitude())
+                .longitude(event.getLongitude())
                 .build();
     }
 }

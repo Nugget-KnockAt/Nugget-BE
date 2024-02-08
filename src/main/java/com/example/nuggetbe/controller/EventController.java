@@ -1,6 +1,5 @@
 package com.example.nuggetbe.controller;
 
-import com.example.nuggetbe.dto.request.EmailDto;
 import com.example.nuggetbe.dto.response.*;
 import com.example.nuggetbe.service.SseEmitters;
 import com.example.nuggetbe.dto.request.EventDto;
@@ -31,10 +30,10 @@ public class EventController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String id = authentication.getName();
 
-            Event event = eventService.createEvent(eventDto.getLocationInfo(), id);
+            Event event = eventService.createEvent(eventDto, id);
 
             // sse
-            EventResponse eventResponse = sseEmitters.sentEvent(id, event.getLocationInfo());
+            EventResponse eventResponse = sseEmitters.sentEvent(id, event);
 
             return new BaseResponse<>(BaseResponseStatus.SUCCESS, eventResponse);
         } catch (BaseException e) {
@@ -43,9 +42,9 @@ public class EventController {
     }
 
     @GetMapping("/event")
-    public BaseResponse<?> readEvent(@RequestBody EmailDto emailDto) {
+    public BaseResponse<?> readEvent(@RequestParam String email) {
         try {
-            String memberEmail = emailDto.getEmail();
+            String memberEmail = email;
 
             List<EventsRes> eventsResList = eventService.readEvents(memberEmail);
 

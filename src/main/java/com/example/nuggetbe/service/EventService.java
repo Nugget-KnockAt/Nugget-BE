@@ -1,5 +1,6 @@
 package com.example.nuggetbe.service;
 
+import com.example.nuggetbe.dto.request.EventDto;
 import com.example.nuggetbe.dto.response.EventsRes;
 import com.example.nuggetbe.entity.Event;
 import com.example.nuggetbe.entity.Member;
@@ -19,12 +20,14 @@ public class EventService {
 
     private final EventRepository eventRepository;
     private final MemberRepository memberRepository;
-    public Event createEvent(String locationInfo, String email) {
+    public Event createEvent(EventDto eventDto, String email) {
 
         Event event = new Event();
 
         event.setMember(memberRepository.findByEmail(email));
-        event.setLocationInfo(locationInfo);
+        event.setLocationInfo(eventDto.getLocationInfo());
+        event.setLatitude(eventDto.getLatitude());
+        event.setLongitude(eventDto.getLongitude());
         event.setCreatedAt(LocalDateTime.now());
 
         eventRepository.save(event);
