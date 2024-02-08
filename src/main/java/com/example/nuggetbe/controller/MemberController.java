@@ -99,12 +99,12 @@ public class MemberController {
             return new BaseResponse<>(e.getStatus());
         }
     }
-    @GetMapping("/customTouch/{touchCount}")
-    public BaseResponse<?> getCustomTouch(@PathVariable int touchCount) {
+    @GetMapping("/customTouch/{action}")
+    public BaseResponse<?> getCustomTouch(@PathVariable String action) {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String memberId = authentication.getName();
-            GetCustomTouchResponse getCustomTouchResponse = memberService.getCustomTouch(touchCount, memberId);
+            GetCustomTouchResponse getCustomTouchResponse = memberService.getCustomTouch(action, memberId);
             return new BaseResponse<>(BaseResponseStatus.SUCCESS, getCustomTouchResponse);
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());

@@ -8,6 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GetCustomTouchResponse {
+    private String action;
     private String text;
 
 }

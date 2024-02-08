@@ -10,16 +10,10 @@ import lombok.Setter;
 @NoArgsConstructor
 public class CustomTouchPostDto {
     @JsonProperty
-    private String third;
+    private String action;
 
     @JsonProperty
-    private String fourth;
-
-    @JsonProperty
-    private String fifth;
-
-    @JsonProperty
-    private String sixth;
+    private String text;
 
 
 }

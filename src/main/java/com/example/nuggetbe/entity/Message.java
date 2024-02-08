@@ -21,7 +21,7 @@ public class Message {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    private Integer touchCount;
+    private String action;
 
     private String text;
 }
