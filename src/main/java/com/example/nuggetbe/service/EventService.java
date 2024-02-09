@@ -1,6 +1,8 @@
 package com.example.nuggetbe.service;
 
 import com.example.nuggetbe.dto.request.EventDto;
+import com.example.nuggetbe.dto.response.BaseException;
+import com.example.nuggetbe.dto.response.EventDetailRes;
 import com.example.nuggetbe.dto.response.EventsRes;
 import com.example.nuggetbe.entity.Event;
 import com.example.nuggetbe.entity.Member;
@@ -13,6 +15,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -56,5 +59,27 @@ public class EventService {
         });
 
         return eventsResList;
+    }
+
+    public EventDetailRes readEvent(Long eventId) {
+        Optional<Event> findEvent = eventRepository.findById(eventId);
+        EventDetailRes eventDetailRes = new EventDetailRes();
+
+        if (findEvent.isPresent()) {
+            Event event = findEvent.get();
+
+            eventDetailRes = EventDetailRes.builder()
+                    .eventId(event.getId())
+                    .locationInfo(event.getLocationInfo())
+                    .memberName(event.getMember().getName())
+                    .memberEmail(event.getMember().getEmail())
+                    .latitude(event.getLatitude())
+                    .longitude(event.getLongitude())
+                    .createdAt(event.getCreatedAt())
+                    .text("")
+                    .build();
+        }
+
+        return eventDetailRes;
     }
 }
