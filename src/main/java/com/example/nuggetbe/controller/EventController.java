@@ -42,13 +42,24 @@ public class EventController {
     }
 
     @GetMapping("/event")
-    public BaseResponse<?> readEvent(@RequestParam String email) {
+    public BaseResponse<?> readEvents(@RequestParam String email) {
         try {
             String memberEmail = email;
 
             List<EventsRes> eventsResList = eventService.readEvents(memberEmail);
 
             return new BaseResponse<>(BaseResponseStatus.SUCCESS, eventsResList);
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    @GetMapping("/event/{eventId}")
+    public BaseResponse<?> readEvent(@PathVariable Long eventId) {
+        try {
+            EventDetailRes eventDetailRes = eventService.readEvent(eventId);
+
+            return new BaseResponse<>(BaseResponseStatus.SUCCESS, eventDetailRes);
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
