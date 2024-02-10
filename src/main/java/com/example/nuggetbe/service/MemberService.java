@@ -32,6 +32,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -115,6 +116,7 @@ public class MemberService {
         }
 
     }
+
 
     public void deleteMember(String email) {
         Member member = memberRepository.findByEmail(email);
@@ -268,5 +270,19 @@ public class MemberService {
     } catch (Exception e) {
         throw new BaseException(BaseResponseStatus.INVALID_USER);
     }
+    }
+
+    public List<GetCustomTouchesResponse> getCustomTouches(String memberId) {
+        Member member = memberRepository.findByEmail(memberId);
+        List<Message> messages = messageRepository.findByMember(member);
+
+        List<GetCustomTouchesResponse> responses = messages.stream()
+                .map(message -> GetCustomTouchesResponse.builder()
+                        .action(message.getAction())
+                        .text(message.getText())
+                        .build())
+                .collect(Collectors.toList());
+
+        return responses;
     }
 }
