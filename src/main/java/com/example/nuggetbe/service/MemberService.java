@@ -101,12 +101,19 @@ public class MemberService {
     public GetCustomTouchResponse getCustomTouch(String action, String email) {
         Member member = memberRepository.findByEmail(email);
 
-        Message message = (Message) messageRepository.findByMemberAndAction(member, action).orElseThrow(() -> new IllegalArgumentException("Message not found with action: " + action));
+        Optional message = (Optional) messageRepository.findByMemberAndAction(member, action);
+        if(message.isPresent()) {
+            return GetCustomTouchResponse.builder()
+                    .action(((Message) message.get()).getAction())
+                    .text(((Message) message.get()).getText())
+                    .build();
+        } else{
+            return GetCustomTouchResponse.builder()
+                    .action(null)
+                    .text(null)
+                    .build();
+        }
 
-        return GetCustomTouchResponse.builder()
-                .action(message.getAction())
-                .text(message.getText())
-                .build();
     }
 
     public void deleteMember(String email) {
