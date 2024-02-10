@@ -17,6 +17,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -99,6 +100,18 @@ public class MemberController {
             return new BaseResponse<>(e.getStatus());
         }
     }
+    @GetMapping("/customTouch")
+    public BaseResponse<List<GetCustomTouchesResponse>> getCustomTouches() {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String memberId = authentication.getName();
+            List<GetCustomTouchesResponse> getCustomTouchesResponses = memberService.getCustomTouches(memberId);
+            return new BaseResponse<>(BaseResponseStatus.SUCCESS, getCustomTouchesResponses);
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
     @GetMapping("/customTouch/{action}")
     public BaseResponse<?> getCustomTouch(@PathVariable String action) {
         try {
