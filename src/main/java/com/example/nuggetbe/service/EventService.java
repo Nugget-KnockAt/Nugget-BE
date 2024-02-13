@@ -1,7 +1,6 @@
 package com.example.nuggetbe.service;
 
 import com.example.nuggetbe.dto.request.EventDto;
-import com.example.nuggetbe.dto.response.BaseException;
 import com.example.nuggetbe.dto.response.EventDetailRes;
 import com.example.nuggetbe.dto.response.EventsRes;
 import com.example.nuggetbe.entity.Event;
@@ -16,8 +15,10 @@ import com.google.maps.errors.ApiException;
 import com.google.maps.model.GeocodingResult;
 import com.google.maps.model.LatLng;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.validation.Valid;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -33,6 +34,10 @@ public class EventService {
     private final EventRepository eventRepository;
     private final MemberRepository memberRepository;
     private final MessageRepository messageRepository;
+
+    @Value("${google.maps.api.key}")
+    private String apiKey;
+
     public Event createEvent(EventDto eventDto, String email) {
 
         Event event = new Event();
@@ -110,7 +115,7 @@ public class EventService {
     }
 
     private String toAddress(EventDto eventDto) {
-        String apiKey = "AIzaSyCurCaBC7A7ZUHaMRZ9w8uKYixcHT6LH70";
+
         Double latitude = eventDto.getLatitude();
         Double longitude = eventDto.getLongitude();
 
