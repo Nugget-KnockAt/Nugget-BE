@@ -13,8 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 public class EventResponse {
 
+    private String text;
     private String eventLocation;
-    private BigDecimal latitude;
-    private BigDecimal longitude;
     private List<String> guardianList;
 }

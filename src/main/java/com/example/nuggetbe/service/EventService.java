@@ -6,11 +6,20 @@ import com.example.nuggetbe.dto.response.EventDetailRes;
 import com.example.nuggetbe.dto.response.EventsRes;
 import com.example.nuggetbe.entity.Event;
 import com.example.nuggetbe.entity.Member;
+import com.example.nuggetbe.entity.Message;
 import com.example.nuggetbe.repository.EventRepository;
 import com.example.nuggetbe.repository.MemberRepository;
+import com.example.nuggetbe.repository.MessageRepository;
+import com.google.maps.GeoApiContext;
+import com.google.maps.GeocodingApi;
+import com.google.maps.errors.ApiException;
+import com.google.maps.model.GeocodingResult;
+import com.google.maps.model.LatLng;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -23,14 +32,18 @@ public class EventService {
 
     private final EventRepository eventRepository;
     private final MemberRepository memberRepository;
+    private final MessageRepository messageRepository;
     public Event createEvent(EventDto eventDto, String email) {
 
         Event event = new Event();
 
+        String text = actionToText(eventDto.getAction(), email);
+        // 위도 경도를 주소
+        String address = toAddress(eventDto);
+
         event.setMember(memberRepository.findByEmail(email));
-        event.setLocationInfo(eventDto.getLocationInfo());
-        event.setLatitude(eventDto.getLatitude());
-        event.setLongitude(eventDto.getLongitude());
+        event.setText(text);
+        event.setLocationInfo(address);
         event.setCreatedAt(LocalDateTime.now());
 
         eventRepository.save(event);
@@ -73,13 +86,45 @@ public class EventService {
                     .locationInfo(event.getLocationInfo())
                     .memberName(event.getMember().getName())
                     .memberEmail(event.getMember().getEmail())
-                    .latitude(event.getLatitude())
-                    .longitude(event.getLongitude())
                     .createdAt(event.getCreatedAt())
-                    .text("")
+                    .text(event.getText())
                     .build();
         }
 
         return eventDetailRes;
+    }
+
+    private String actionToText(String action, String email) {
+        Member member = memberRepository.findByEmail(email);
+        Message message =(Message) messageRepository.findByMemberAndAction(member, action).orElseThrow();
+
+        String text = message.getText();
+
+        return text;
+    }
+
+    private String toAddress(EventDto eventDto) {
+        String apiKey = "AIzaSyCurCaBC7A7ZUHaMRZ9w8uKYixcHT6LH70";
+        double latitude = eventDto.getLatitude();
+        double longitude = eventDto.getLongitude();
+
+        GeoApiContext context = new GeoApiContext.Builder()
+                .apiKey(apiKey)
+                .build();
+
+        try {
+            LatLng latLng = new LatLng(latitude, longitude);
+            GeocodingResult[] results = GeocodingApi.newRequest(context).latlng(latLng).await();
+
+            System.out.println("results[0].formattedAddress = " + results[0].formattedAddress);
+
+            return results[0].formattedAddress;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } catch (ApiException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

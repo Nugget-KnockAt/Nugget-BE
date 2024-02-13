@@ -14,12 +14,11 @@ import java.math.BigDecimal;
 public class EventDto {
 
     @JsonProperty
-    @NotNull
-    private String locationInfo;
+    private String action;
 
     @JsonProperty
-    private BigDecimal latitude;
+    private double latitude;
 
     @JsonProperty
-    private BigDecimal longitude;
+    private double longitude;
 }

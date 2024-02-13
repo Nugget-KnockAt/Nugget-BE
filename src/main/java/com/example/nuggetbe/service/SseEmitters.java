@@ -57,21 +57,23 @@ public class SseEmitters {
                 .filter(Objects::nonNull)
                 .toList();
 
-        String jsonData = "{\"event\": \"피보호자에게" + event.getLocationInfo() + "에서 이벤트가 발생했습니다.\"}";
+        String jsonDataLocation = "{\"event\": \"피보호자에게" + event.getLocationInfo() + "에서 이벤트가 발생했습니다.\"}";
+        String jsonDataText = "{\"text\": \"" + event.getText() + "\"}";
+
         connectionEmitters.forEach(emitter -> {
             try {
                 emitter.send(SseEmitter.event()
-                        .data(jsonData, MediaType.APPLICATION_JSON));
+                        .data(jsonDataLocation, MediaType.APPLICATION_JSON)
+                        .data(jsonDataText, MediaType.APPLICATION_JSON));
             } catch (IOException e) {
                 emitter.completeWithError(e);
             }
         });
 
         return EventResponse.builder()
+                .text(event.getText())
                 .guardianList(connectionList)
                 .eventLocation(event.getLocationInfo())
-                .latitude(event.getLatitude())
-                .longitude(event.getLongitude())
                 .build();
     }
 }

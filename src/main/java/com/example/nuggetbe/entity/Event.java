@@ -28,12 +28,10 @@ public class Event {
     @Column(nullable = false)
     private String locationInfo;
 
+    private String text;
+
     @Column(nullable = false)
     @CreatedDate
     private LocalDateTime createdAt;
-
-    private BigDecimal latitude;
-
-    private BigDecimal longitude;
 
 }
