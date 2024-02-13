@@ -16,4 +16,7 @@ public class EventResponse {
     private String text;
     private String eventLocation;
     private List<String> guardianList;
+
+    private double latitude;
+    private double longitude;
 }

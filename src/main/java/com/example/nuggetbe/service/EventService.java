@@ -44,6 +44,8 @@ public class EventService {
         event.setMember(memberRepository.findByEmail(email));
         event.setText(text);
         event.setLocationInfo(address);
+        event.setLatitude(eventDto.getLatitude());
+        event.setLongitude(eventDto.getLongitude());
         event.setCreatedAt(LocalDateTime.now());
 
         eventRepository.save(event);
@@ -65,6 +67,8 @@ public class EventService {
                     .eventId(event.getId())
                     .memberEmail(event.getMember().getEmail())
                     .locationInfo(event.getLocationInfo())
+                    .latitude(event.getLatitude())
+                    .longitude(event.getLongitude())
                     .createdAt(event.getCreatedAt())
                     .build();
 
@@ -86,6 +90,8 @@ public class EventService {
                     .locationInfo(event.getLocationInfo())
                     .memberName(event.getMember().getName())
                     .memberEmail(event.getMember().getEmail())
+                    .latitude(event.getLatitude())
+                    .longitude(event.getLongitude())
                     .createdAt(event.getCreatedAt())
                     .text(event.getText())
                     .build();

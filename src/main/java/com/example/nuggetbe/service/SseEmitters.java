@@ -74,6 +74,8 @@ public class SseEmitters {
                 .text(event.getText())
                 .guardianList(connectionList)
                 .eventLocation(event.getLocationInfo())
+                .latitude(event.getLatitude())
+                .longitude(event.getLongitude())
                 .build();
     }
 }

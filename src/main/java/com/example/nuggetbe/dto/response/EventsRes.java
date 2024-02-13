@@ -17,6 +17,6 @@ public class EventsRes {
     private String locationInfo;
     private LocalDateTime createdAt;
 
-    private BigDecimal latitude;    // 위도
-    private BigDecimal longitude;   // 경도
+    private double latitude;
+    private double longitude;
 }
