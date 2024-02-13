@@ -17,8 +17,8 @@ public class EventDto {
     private String action;
 
     @JsonProperty
-    private double latitude;
+    private Double latitude;
 
     @JsonProperty
-    private double longitude;
+    private Double longitude;
 }
