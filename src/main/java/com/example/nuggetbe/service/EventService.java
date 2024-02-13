@@ -111,8 +111,8 @@ public class EventService {
 
     private String toAddress(EventDto eventDto) {
         String apiKey = "AIzaSyCurCaBC7A7ZUHaMRZ9w8uKYixcHT6LH70";
-        double latitude = eventDto.getLatitude();
-        double longitude = eventDto.getLongitude();
+        Double latitude = eventDto.getLatitude();
+        Double longitude = eventDto.getLongitude();
 
         GeoApiContext context = new GeoApiContext.Builder()
                 .apiKey(apiKey)

@@ -34,6 +34,6 @@ public class Event {
     @CreatedDate
     private LocalDateTime createdAt;
 
-    private double latitude;
-    private double longitude;
+    private Double latitude;
+    private Double longitude;
 }

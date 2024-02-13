@@ -16,8 +16,8 @@ public class EventDetailRes {
     private String locationInfo;
     private String memberName;
     private String memberEmail;
-    private double latitude;
-    private double longitude;
+    private Double latitude;
+    private Double longitude;
     private LocalDateTime createdAt;
     private String text;
 }
