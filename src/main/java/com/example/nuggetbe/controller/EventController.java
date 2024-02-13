@@ -25,8 +25,6 @@ public class EventController {
     @PostMapping("/event")
     public BaseResponse<?> createEvent(@RequestBody EventDto eventDto) {
         try {
-            System.out.println("locationInfo = " + eventDto.getLocationInfo());
-
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String id = authentication.getName();
 
