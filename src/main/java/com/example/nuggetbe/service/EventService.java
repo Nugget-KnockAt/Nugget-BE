@@ -71,6 +71,7 @@ public class EventService {
             EventsRes eventsRes = EventsRes.builder()
                     .eventId(event.getId())
                     .memberEmail(event.getMember().getEmail())
+                    .memberName(event.getMember().getName())
                     .locationInfo(event.getLocationInfo())
                     .latitude(event.getLatitude())
                     .longitude(event.getLongitude())

@@ -14,6 +14,7 @@ public class EventsRes {
 
     private Long eventId;
     private String memberEmail;
+    private String memberName;
     private String locationInfo;
     private LocalDateTime createdAt;
 
