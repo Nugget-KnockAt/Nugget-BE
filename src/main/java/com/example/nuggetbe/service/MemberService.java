@@ -1,5 +1,6 @@
 package com.example.nuggetbe.service;
 
+import com.example.nuggetbe.dto.request.ConnectionListDto;
 import com.example.nuggetbe.dto.request.CustomTouchPostDto;
 import com.example.nuggetbe.dto.request.EmailInfoRes;
 import com.example.nuggetbe.dto.request.member.LoginReq;
@@ -117,6 +118,30 @@ public class MemberService {
 
     }
 
+    public ConnectionListDto getConnectionList(String email) {
+        Member member = memberRepository.findByEmail(email);
+
+        List<Connection> connections;
+        List<String> connectionList;
+
+        if (member.getRole() == Role.ROLE_MEMBER) {
+            connections = member.getConnectionMembers();
+
+            connectionList = connections.stream()
+                    .map(connection -> connection.getGuardian().getEmail())
+                    .toList();
+        } else {
+            connections = member.getConnectionGuardians();
+
+            connectionList = connections.stream()
+                    .map(connection -> connection.getMember().getEmail())
+                    .toList();
+        }
+
+        return ConnectionListDto.builder()
+                .connectionList(connectionList)
+                .build();
+    }
 
     public void deleteMember(String email) {
         Member member = memberRepository.findByEmail(email);

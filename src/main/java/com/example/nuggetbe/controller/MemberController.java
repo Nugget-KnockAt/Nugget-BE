@@ -2,6 +2,7 @@ package com.example.nuggetbe.controller;
 
 
 import com.example.nuggetbe.dto.request.ConnectionDto;
+import com.example.nuggetbe.dto.request.ConnectionListDto;
 import com.example.nuggetbe.dto.request.CustomTouchPostDto;
 import com.example.nuggetbe.dto.request.EmailInfoRes;
 import com.example.nuggetbe.dto.request.member.LoginReq;
@@ -53,6 +54,19 @@ public class MemberController {
         try {
             LoginRes loginRes = memberService.login(loginReq);
             return new BaseResponse<>(BaseResponseStatus.SUCCESS, loginRes);
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    @GetMapping("/connect")
+    public BaseResponse<?> connections() {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String memberEmail = authentication.getName();
+
+            ConnectionListDto response = memberService.getConnectionList(memberEmail);
+            return new BaseResponse<>(BaseResponseStatus.SUCCESS, response);
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
