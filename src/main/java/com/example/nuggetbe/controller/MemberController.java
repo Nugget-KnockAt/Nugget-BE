@@ -88,14 +88,13 @@ public class MemberController {
     @PostMapping("/connect")
     public BaseResponse<?> createConnection(@RequestBody ConnectionDto request) {
         try {
-            UUID uuid = UUID.fromString(request.getUuid());
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            String memberId = authentication.getName();
-                memberService.createConnection(uuid, memberId);
+            String guardianId = authentication.getName();
+                memberService.createConnection(request.getEmail(), guardianId);
             return new BaseResponse<>(BaseResponseStatus.SUCCESS, "연결 성공");
         } catch (IllegalArgumentException e) {
-            log.error("Error in createConnection: Invalid UUID string", e);
-            return new BaseResponse<>(BaseResponseStatus.INVALID_UUID_FORMAT, "Invalid UUID format");
+            log.error("Error in createConnection: Invalid email string", e);
+            return new BaseResponse<>(BaseResponseStatus.INVALID_UUID_FORMAT, "Invalid email format");
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }

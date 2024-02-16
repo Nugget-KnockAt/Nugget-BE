@@ -8,5 +8,5 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class ConnectionDto {
-    private String uuid;
+    private String email;
 }
