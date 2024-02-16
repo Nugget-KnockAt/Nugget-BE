@@ -55,10 +55,10 @@ public class MemberService {
 
 
     @Transactional
-    public void createConnection(UUID uuid, String email) {
+    public void createConnection(String email, String guardianEmail) {
 
-        Member member = memberRepository.findByUuid(uuid);
-        Member guardian = memberRepository.findByEmail(email);
+        Member member = memberRepository.findByEmail(email);
+        Member guardian = memberRepository.findByEmail(guardianEmail);
 
         System.out.println(member.getEmail());
         System.out.println(guardian.getEmail());
