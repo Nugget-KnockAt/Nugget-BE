@@ -37,8 +37,8 @@ jobs:
         if: contains(github.ref, 'main') # branch가 main 일 때, 나머지는 위와 동일
         run: |
           cd ./src/main/resources
-          touch ./application-prod.properties
-          echo "${{ secrets.PROPERTIES }}" > ./application-prod.properties
+          touch ./application.properties
+          echo "${{ secrets.PROPERTIES }}" > ./application.properties
         shell: bash
 
       ## gradle build
