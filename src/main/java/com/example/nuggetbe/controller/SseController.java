@@ -25,7 +25,7 @@ public class SseController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String userEmail = authentication.getName();
 
-            SseEmitter emitter = new SseEmitter(60 * 1000 * 60 * 24L);
+            SseEmitter emitter = new SseEmitter(60 * 1000 * 60 * 2L);
             sseEmitters.handleSse(userEmail, emitter);
 
             emitter.send(SseEmitter.event()
