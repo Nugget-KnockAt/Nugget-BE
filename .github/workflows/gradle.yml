@@ -50,8 +50,8 @@ jobs:
         if: contains(github.ref, 'main')
         run: |
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-          docker build -f Dockerfile -t yeeunkang/nugget .
-          docker push yeeunkang/nugget
+          docker build -f Dockerfile -t seonghwa/nugget:0.1.0 .
+          docker push seonghwa/nugget:0.1.0
       
 
       ## deploy to production
@@ -65,8 +65,8 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           envs: GITHUB_SHA
           script: |
-            sudo docker stop nugget
-            sudo docker rm nugget
-            sudo docker pull yeeunkang/nugget
-            sudo docker run -d -p 8080:8080 --name nugget yeeunkang/nugget
+            sudo docker stop nugget:0.1.0
+            sudo docker rm nugget:0.1.0
+            sudo docker run -d -p 8080:8080 --name nugget seonghwa/nugget:0.1.0
+            sudo docker pull seonghwa/nugget:0.1.0
             sudo docker image prune -f
