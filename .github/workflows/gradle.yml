@@ -67,6 +67,6 @@ jobs:
           script: |
             sudo docker stop nugget:0.1.0
             sudo docker rm nugget:0.1.0
-            sudo docker run -d -p 8080:8080 --name nugget seonghwa/nugget:0.1.0
+            sudo docker run -d -p 8080:8080 --name nugget:0.1.0 seonghwa/nugget:0.1.0
             sudo docker pull seonghwa/nugget:0.1.0
             sudo docker image prune -f
