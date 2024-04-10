@@ -67,7 +67,7 @@ public class EventService {
         List<Event> eventList = eventRepository.findAllByMemberAndCreatedAtAfter(member, timeBefore7Days);
         List<EventsRes> eventsResList = new ArrayList<>();
 
-        System.out.println("git action test용 추가");
+        System.out.println("git action test용 추가!");
 
         eventList.forEach(event -> {
             EventsRes eventsRes = EventsRes.builder()
