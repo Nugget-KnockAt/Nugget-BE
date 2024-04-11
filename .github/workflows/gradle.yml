@@ -50,8 +50,8 @@ jobs:
         if: contains(github.ref, 'main')
         run: |
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-          docker build -f Dockerfile -t seonghwa/nugget:0.1.0 .
-          docker push seonghwa/nugget:0.1.0
+          docker build -f Dockerfile -t seonghwa/nugget .
+          docker push seonghwa/nugget
       
 
       ## deploy to production
