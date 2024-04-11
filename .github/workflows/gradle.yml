@@ -64,6 +64,7 @@ jobs:
           username: ubuntu
           key: ${{ secrets.SSH_KEY }}
           script: |
+            cd ~/Nugget-BE/
             git pull origin main
             sudo docker stop nugget
             sudo docker rm nugget
