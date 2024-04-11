@@ -61,10 +61,10 @@ public class EventService {
     public List<EventsRes> readEvents(String memberEmail) {
 
         // 7일전
-        LocalDateTime timeBefore7Days = LocalDateTime.now().minus(7, ChronoUnit.DAYS);
+        LocalDateTime last7Days = computeLast7Days();
         Member member = memberRepository.findByEmail(memberEmail);
 
-        List<Event> eventList = eventRepository.findAllByMemberAndCreatedAtAfter(member, timeBefore7Days);
+        List<Event> eventList = eventRepository.findAllByMemberAndCreatedAtAfter(member, last7Days);
         List<EventsRes> eventsResList = new ArrayList<>();
 
         System.out.println("git action test용 추가!!");
@@ -84,6 +84,10 @@ public class EventService {
         });
 
         return eventsResList;
+    }
+
+    private LocalDateTime computeLast7Days() {
+        return LocalDateTime.now().minus(7, ChronoUnit.DAYS);
     }
 
     public EventDetailRes readEvent(Long eventId) {
