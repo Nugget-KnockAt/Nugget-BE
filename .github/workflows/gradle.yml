@@ -56,15 +56,15 @@ jobs:
 
       ## deploy to production
       - name: Deploy to prod
-        uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@0.1.9
         id: deploy-prod
         if: contains(github.ref, 'main')
         with:
           host: ${{ secrets.HOST_PROD }}
           username: ubuntu
           key: ${{ secrets.SSH_KEY }}
-          envs: GITHUB_SHA
           script: |
+            git pull origin main
             sudo docker stop nugget
             sudo docker rm nugget
             sudo docker run -d -p 8080:8080 --name nugget seonghwa/nugget
