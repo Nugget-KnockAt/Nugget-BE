@@ -15,6 +15,7 @@ import com.google.maps.errors.ApiException;
 import com.google.maps.model.GeocodingResult;
 import com.google.maps.model.LatLng;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class EventService {
@@ -76,7 +78,7 @@ public class EventService {
         List<Event> eventList = eventRepository.findAllByMemberAndCreatedAtAfter(member, last7Days);
         List<EventsRes> eventsResList = new ArrayList<>();
 
-        System.out.println("git action test용 추가!!!");
+        log.info("eventService -> readEvents");
 
         eventList.forEach(event -> {
             EventsRes eventsRes = EventsRes.builder()
