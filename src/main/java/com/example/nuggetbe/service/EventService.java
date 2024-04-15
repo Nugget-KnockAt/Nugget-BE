@@ -1,6 +1,9 @@
 package com.example.nuggetbe.service;
 
+import com.example.nuggetbe.common.CommonUtils;
 import com.example.nuggetbe.dto.request.EventDto;
+import com.example.nuggetbe.dto.response.BaseException;
+import com.example.nuggetbe.dto.response.BaseResponseStatus;
 import com.example.nuggetbe.dto.response.EventDetailRes;
 import com.example.nuggetbe.dto.response.EventsRes;
 import com.example.nuggetbe.entity.Event;
@@ -74,6 +77,10 @@ public class EventService {
         // 7일전
         LocalDateTime last7Days = computeLast7Days();
         Member member = memberRepository.findByEmail(memberEmail);
+
+        if (CommonUtils.isNull(member)) {
+            throw new BaseException(BaseResponseStatus.INVALID_USER);
+        }
 
         List<Event> eventList = eventRepository.findAllByMemberAndCreatedAtAfter(member, last7Days);
         List<EventsRes> eventsResList = new ArrayList<>();
