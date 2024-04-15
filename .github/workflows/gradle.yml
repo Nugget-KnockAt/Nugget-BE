@@ -64,10 +64,8 @@ jobs:
           username: ubuntu
           key: ${{ secrets.SSH_KEY }}
           script: |
-            cd ~/Nugget-BE/
-            git pull origin main
             sudo docker stop nugget
             sudo docker rm nugget
-            sudo docker run -d -p 8080:8080 --name nugget seonghwa/nugget
             sudo docker pull seonghwa/nugget
+            sudo docker run -d -p 8080:8080 --name nugget seonghwa/nugget
             sudo docker image prune -f
