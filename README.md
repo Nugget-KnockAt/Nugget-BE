@@ -1,3 +1,6 @@
+# Nugget
+2024 GDSC Global Top 100 진출작
+
 ## **📍**프로젝트 소개
 
 <img width="887" alt="스크린샷 2024-06-25 오후 11 20 05" src="https://github.com/Nugget-KnockAt/Nugget-BE/assets/95922668/6f7f73e6-74cd-4810-acf4-5d5ffeafa7cd">
