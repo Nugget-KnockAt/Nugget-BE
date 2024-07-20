@@ -1,5 +1,5 @@
 # Nugget
-2024 GDSC Global Top 100 진출작
+**🎉**2024 GDSC Global Top 100 진출**🎉**
 
 ## **📍**프로젝트 소개
 
