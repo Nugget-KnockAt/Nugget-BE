@@ -27,12 +27,6 @@
 
 ---
 
-## **📍아키텍처**
-<img width="708" alt="스크린샷 2024-06-25 오후 11 27 02" src="https://github.com/Nugget-KnockAt/Nugget-BE/assets/95922668/6f693d4a-9ed4-4878-a361-2b15ff642dca">
-
-
----
-
 ## **📍역할**
 
 - 시스템 아키텍처 설계
